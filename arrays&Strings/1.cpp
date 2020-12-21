@@ -62,7 +62,6 @@ void rotate(vector<int>& nums, int k) {
     reverse(nums,n-k,n-1);
     reverse(nums,0,n-1);
 }
-
 void reverse(vector<int>& nums, int low, int high){
     while(low < high){
         swap(nums[low], nums[high]);
@@ -88,5 +87,344 @@ int max_sum(int arr[],int n)
 
         return maxSum;
 }
+
+//3
+int lengthOfLongestSubstring(string s) {
+    int n = s.length();
+    if(n == 0){
+        return 0;
+    }
+    
+    //128 will take care of all chars
+    vector<int> map(128,0);
+    int si=0, ei=0, count=0, len=0, maxsi=0, maxei=0;
+    
+    while(ei < n){
+        /*here ++ is post incremnet so first map[s[ei]] > 0 will be checked after that expresion will modify values in right -> left direction that is,             first map[s[ei]]++ will happen then ei++ will happen if condition is true, count will decrement but the above post increment operations wil                 occur irrespective of condition being T or F 
+        equivalent to:
+        if(map[s[ei]] > 0){
+            count++;
+        }
+        map[s[ei]]++;
+        ei++;
+        */
+        if(map[s[ei++]]++ > 0){
+            count++;
+        }
+        
+        while(count > 0){
+            //same post increment and decrement logic here
+            if(map[s[si++]]-- > 1){
+                count--;
+            }
+        }
+        
+        if(ei - si > len){
+            len = ei - si;
+            //maxsi and maxei can be used in end to display the longest non repeating substring using s.substr(maxsi,maxei-maxsi);
+            maxsi = si;
+            maxei = ei;
+        }
+    }
+    //cout<<s.substr(maxsi,maxei-maxsi);
+    return len;
+}
+
+//76
+string minWindow(string s, string t) {
+    int ns = s.length();
+    int nt = t.length();
+    
+    vector<int> v(128,0);
+    //ei creates a window containing all chars of t, si then tries to reduce it by removing unnessesary chars
+    int si=0, ei=0, requirement = nt, len = 1e8, head = 0;
+    
+    for(int i=0; i<nt; ++i){
+        v[t[i]]++;
+    }
+
+    while(ei < ns){
+        
+        if(v[s[ei++]]-- > 0){
+            requirement--;
+        }
+        
+        while(requirement == 0){
+            if(ei-si < len){
+                //moving right to left first head is assigned as si, then len = ei - head or si is done 
+                len = ei- (head=si);
+            }
+            if(v[s[si++]]++ == 0){
+                requirement++;
+            }
+        }
+    }
+    
+    return len == 1e8 ? "" : s.substr(head, len);
+}
+
+//https://practice.geeksforgeeks.org/problems/smallest-distant-window/0
+void SmallestdistinctWindow(){
+    string str;
+    cin>>str;
+    int n = str.length();
+    vector<int> v(128,0);
+    int requirement = 0, len = INT_MAX, head = 0;
+    for(int i=0; i<n; ++i){
+        if(v[str[i]] == 0){
+            v[str[i]]++;
+            requirement++;
+        }
+    }
+    int s=0, e=0;
+    while(e<n){
+        
+        if(v[str[e++]]-- > 0){
+            requirement--;
+        }
+        
+        while(requirement == 0){
+            if(e-s < len){
+                len = e-s;
+                head=s;
+            }
+            
+            if(v[str[s++]]++ == 0){
+                requirement++;
+            }
+        }
+    }
+
+    cout << len <<endl;
+}
+
+//159 locked
+string _2distinct(string s){
+    int n = s.length();
+    if(n ==0){
+        return "";
+    }
+    if(n <= 2){
+        return s;
+    }
+
+    int si = 0, ei = 0, dc = 0, len = 0, head = 0;
+    vector<int> freq(128,0);
+    while(ei < n){
+        if(freq[s[ei++]]++ == 0)
+            dc++;
+
+        while(dc > 2)
+            if(freq[s[si++]]-- == 1)
+                dc--;
+            
+        len = (ei - si) > len ? ei - (head = si) : len;
+    }
+
+    return s.substr(head, len);
+}
+
+//340 locked
+string _2distinct(string s, int k){
+    int n = s.length();
+    if(n ==0){
+        return "";
+    }
+
+    int si = 0, ei = 0, dc = 0, len = 0, head = 0;
+    vector<int> freq(128,0);
+    while(ei < n){
+        if(freq[s[ei++]]++ == 0)
+            dc++;
+
+        while(dc > k)
+            if(freq[s[si++]]-- == 1)
+                dc--;
+            
+        len = (ei - si) > len ? ei - (head = si) : len;
+    }
+
+    return s.substr(head, len);
+}
+
+//1456
+bool isvowel(char c){
+    return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+}
+int maxVowels(string s, int k) {
+    int n = s.length();
+    int si=0, ei=0,vcount=0, maxvcount=0;
+    while(ei<n){
+        if(isvowel(s[ei++])){
+            vcount++;
+        }
+        if(ei-si == k){
+            maxvcount = max(maxvcount, vcount);
+            if(isvowel(s[si++])){
+                vcount--;
+            }
+        }
+    }
+    return maxvcount;
+}
+
+//239
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    //nlogn worst case (increasing order, none of the element gets popped)
+    //nlogk best case (dec order of input)
+    int n = nums.size();
+    if(n == 1 || k == 1){
+        return nums;
+    }
+    
+    //{nums[i], i}
+    priority_queue <pair<int,int> > pq;
+    
+    vector<int> ans;
+    
+    for(int i=0; i<n; ++i){
+        
+        //removing elements that dont belong in current window and are on top
+        while(pq.size() != 0 && pq.top().second <= i-k){
+            pq.pop();
+        }
+        //adding possible maximum candidate of current window
+        pq.push({nums[i],i});
+        
+        //window over, add max of curr window
+        if(i >= k-1){
+            ans.push_back(pq.top().first);
+        }
+    }
+    
+    return ans;
+}
+
+//https://practice.geeksforgeeks.org/problems/largest-subarray-of-0s-and-1s/1
+int maxLen(int nums[], int n)
+{
+// Your code here
+    if(n <= 1){
+        return 0;
+    }
+    int len = 0, sum=0;
+    map<int,int> m; //sum,idx
+    m[0] = -1;
+    
+    for(int i=0; i<n; ++i){
+        int curVal = nums[i];
+        //considering 0s as -1 for ease
+        if(curVal == 0){
+            curVal = -1;
+        }
+        sum += curVal;
+        
+        if(m.find(sum) != m.end()){
+            len = max(len, i-m[sum]);
+        }
+        else{
+            m[sum] = i;
+        }
+        
+    }
+    return len;
+}
+
+//https://practice.geeksforgeeks.org/problems/count-subarrays-with-equal-number-of-1s-and-0s-1587115620/1
+long long int countSubarrWithEqualZeroAndOne(int nums[], int n)
+{
+//Your code here
+    if(n <= 1){
+        return 0;
+    }
+    int sum=0;
+    int count=0;
+    map<int,int> m; //sum,freq_of_sum
+    m[0] = 1;
+    
+    for(int i=0; i<n; ++i){
+        int curVal = nums[i];
+        //considering 0s as -1 for ease
+        if(curVal == 0){
+            curVal = -1;
+        }
+        sum += curVal;
+        m[sum]++;
+    }
+    for(pair<int,int> p : m){
+        count += (p.second * (p.second-1))/2;
+    }
+    return count;
+}
+
+//https://practice.geeksforgeeks.org/problems/longest-subarray-with-sum-divisible-by-k1259/1
+int longSubarrWthSumDivByK(int arr[], int n, int k)
+{
+    // Complete the function
+    if(n == 0){
+        return 0;
+    }
+    map<int,int> m; //sum,idx
+    m[0] = -1;
+    int sum=0, mod=0, len=0;
+    for(int i=0; i<n; ++i){
+        sum += arr[i];
+        mod = (sum%k + k)%k;
+        if(m.find(mod) != m.end() ){
+            len = max(len, i-m[mod]);
+        }
+        else{
+            m[mod] = i;
+        }
+    }
+    return len;
+}
+
+//974
+int subarraysDivByK(vector<int>& arr, int k) {
+    int n = arr.size();
+    if(n==0){
+        return 0;
+    }
+    
+    long long sum = 0, mod;
+    long long count = 0;
+    map<int,int> m; //mod,freq
+    m[0]=1;
+    
+    for(int i=0; i<n; ++i){
+        sum += arr[i];
+        mod = (sum % k + k) % k; //to get correct mod when sum is negative
+        m[mod]++;
+    }
+    for(pair<int,int> p : m){
+        count += (p.second * (p.second-1))/2;
+    }
+    return count;
+}
+
+//781
+int numRabbits(vector<int>& answers) {
+    int n = answers.size();
+    if(n == 0){
+        return 0;
+    }
+    // map<int,int> m; //rabbit in hand, same other possible rabbits
+    vector<int> m(1000,0);
+    int count = 0;
+    for(int i=0; i<n; ++i){
+        if(m[answers[i]] == 0){
+            count += answers[i]+1;
+            m[answers[i]] = answers[i];
+        }
+        else{
+            m[answers[i]]--;
+        }
+    }
+    
+    return count;
+}
+
+
 
 
