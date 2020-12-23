@@ -425,6 +425,197 @@ int numRabbits(vector<int>& answers) {
     return count;
 }
 
+//930
+int noOfSubarraysWithAtmostKSum(vector<int>& A, int S){
+    int n = A.size();
+    int si=0, ei=0, count=0, presum=0;
+    while(ei < n){
+        presum += A[ei++];
+        while(presum > S){
+            presum -= A[si++];
+        }
+        count += ei-si;
+    }
+    return count;
+}
+int numSubarraysWithSum(vector<int>& A, int S) {
+    int n = A.size();
+    if(n == 0){
+        return 0;
+    }
+    return noOfSubarraysWithAtmostKSum(A, S) - ( (S > 0) ? noOfSubarraysWithAtmostKSum(A, S-1) : 0 ) ;
+}
+
+//1248
+int numberOfSubarrayWithAtmostKOddNumbers(vector<int>& nums, int k){
+    int n = nums.size();
+    int si=0, ei=0, count = 0, presum=0;
+    while(ei < n){
+        
+        if(nums[ei++] & 1){
+            presum++;
+        }
+        
+        while(presum > k){
+            if(nums[si++] & 1){
+                presum--;
+            }
+        }
+        count += ei-si;
+    }
+    return count;
+}
+int numberOfSubarrays(vector<int>& nums, int k) {
+    int n = nums.size();
+    return numberOfSubarrayWithAtmostKOddNumbers(nums, k) - numberOfSubarrayWithAtmostKOddNumbers(nums, k-1); 
+
+}
+
+//1004
+int longestOnes(vector<int>& A, int K) {
+    int n = A.size();
+    //ques can be interpreted as longest subarray with atmost k zeroes
+    int si=0, ei=0, len=0, zeroCount = 0;
+    while(ei < n){
+        if(A[ei++] == 0) zeroCount++;
+        
+        while(zeroCount > K){
+            if(A[si++] == 0) zeroCount--;
+        }
+        len = max(len, ei-si);
+    }
+    return len;
+}
+
+//904
+int totalFruit(vector<int>& tree) {
+    int n = tree.size();
+    int si=0, ei=0, len=0, dc=0;
+    // map<int, int> m; //val, freq
+    vector<int> m(400001,0);
+    while(ei < n){
+        if(m[tree[ei++]]++ == 0) dc++;
+        
+        while(dc > 2){
+            if(m[tree[si++]]-- == 1) dc--;
+        }
+        len = max(len,ei-si);
+    }
+    return len;
+}
+
+//209
+int minSubArrayLen(int s, vector<int>& nums) {
+    int n = nums.size();
+    int si = 0, ei = 0, len = 1e8, sum = 0;
+    while(ei < n){
+        sum += nums[ei++];
+        
+        while(sum >= s){
+            len = min(len, ei - si);
+            sum -= nums[si++];
+        }
+    }
+    return (len == 1e8) ? 0 : len;
+}
+
+//53
+int maxSubArray(vector<int>& nums) {
+    //this is generic, i.e works for whole -ve array also
+    int n = nums.size();
+    int gmax = nums[0], runningSum = gmax;
+    for(int i=1; i<n; ++i){
+        //new start at nums[i] is benefical or continue old runningSum + nums[i]
+        runningSum = max(nums[i], runningSum + nums[i]);
+        //update gmax
+        gmax = max(gmax, runningSum);
+    }
+    return gmax;
+}
+
+//1191
+int kConcatenationMaxSum(vector<int>& arr, int k) {
+    /*if k==1 simple kadane
+    if sum of array < 0 then kadane of 2 copies of array
+    if sum > 0 then ans = kadane of two copies + (k-2)*sum */
+    
+    int n = arr.size();
+    int mod = (1e9 +7);
+
+    if(k == 1){
+        //generic kadane i.e works for all -ve nums too
+        int gSum = arr[0], runningSum = arr[0];
+        for(int i=1; i<n; ++i){
+            runningSum = max(arr[i], runningSum + arr[i]);
+            runningSum %= mod;
+            gSum = max(gSum, runningSum);
+            gSum %= mod;
+        }
+        return gSum;
+    }
+    
+    long long sum = 0;
+    for(int i=0; i<n; ++i) {
+        sum += arr[i];
+        sum %= mod;
+    }
+    
+    //kadane of 2 copies of arr
+    int count = 1;
+    int gSum2 = arr[0], runningSum2 = arr[0];
+        for(int i=1; i<n; ++i){
+            runningSum2 = max(arr[i], runningSum2 + arr[i]);
+            runningSum2 %= mod;
+            gSum2 = max(gSum2, runningSum2);
+            gSum2 %= mod;
+            
+            //for 2nd traversal
+            if(count == 1 && i == n-1){
+                count--;
+                i = -1;
+            }
+        }
+    
+    if(sum < 0) return ((gSum2 > 0) ? gSum2 : 0);
+    if(sum >= 0){
+        long long bwSum = ( (k-2) * sum ) % mod;
+        long long ans = ( gSum2 + bwSum ) % mod;
+        return ans;
+    }
+    return 0;
+}
+
+//1074
+int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {
+    int r = matrix.size();
+    int c = matrix[0].size();
+    
+    //creating prefix matrix, that is every cell is sum of itself + all column elements above it
+    for(int i=1; i<r; ++i){
+        for(int j=0; j<c; ++j){
+            matrix[i][j] += matrix[i-1][j];
+        }
+    }
+    int count = 0;
+    for(int base=0; base<r; ++base){
+        
+        for(int row=base; row<r; ++row){
+            
+            map<int,int> m; //sum,freq
+            m[0] = 1;
+            int sum = 0;
+            for(int j=0; j<c; ++j){
+                
+                sum += matrix[row][j] - ((base > 0) ? matrix[base-1][j] : 0);
+                if(m.find(sum-target) != m.end()){
+                    count += m[sum-target];
+                }  
+                m[sum]++;
+            }
+        }
+    }
+    return count;
+}
 
 
 
