@@ -316,3 +316,146 @@ int search(vector<int>& nums, int target) {
     }
     return -1;
 }
+
+//81
+bool search(vector<int>& nums, int target) {
+    //worst case O(n) Avg case O(logN)
+    int n = nums.size();
+    int si=0, ei=n-1, mid;
+    while(si <= ei){
+        mid = (si+ei)/2;
+        
+        if(nums[mid] == target || nums[si] == target) 
+            return true;
+        
+        else if(nums[mid] > nums[si]){
+            if(target > nums[si] && target < nums[mid])
+                ei = mid - 1;
+            else
+                si = mid + 1;
+        }
+        
+        else if(nums[mid] < nums[ei]){
+            if(target <= nums[ei] && target > nums[mid])
+                si = mid + 1;
+            else
+                ei = mid - 1;
+        }
+        else{
+            si++;
+        }
+    }
+    return false;
+}
+
+//153
+int findMin(vector<int>& nums) {
+    int n = nums.size();
+    int lo = 0, hi = n - 1, mid;
+    while(lo < hi){
+        mid = lo + (hi - lo)/2;
+        if(nums[mid] > nums[hi]) lo = mid + 1;
+        else hi = mid;
+    }
+    return nums[hi];
+}
+
+//1
+vector<int> twoSum(vector<int>& nums, int target) {
+    int n = nums.size();
+    unordered_map<int,int> m;
+    vector<int> ans;
+    for(int i=0; i<n; ++i){
+        if(m.find(target - nums[i]) != m.end()) return {i,m[target - nums[i]]};
+        m[nums[i]] = i;
+    }
+    return {};
+}
+
+//167
+vector<int> twoSum(vector<int>& numbers, int target) {
+    int n = numbers.size();
+    int si = 0, ei = n - 1;
+    while(si < ei){
+        if(numbers[si] + numbers[ei] == target)
+            return {si+1, ei+1};
+        else if(numbers[si] + numbers[ei] > target)
+                ei--;
+        else   
+            si++;
+    }
+    return {};
+}
+
+//15
+vector<vector<int>> threeSum(vector<int>& arr) {
+    
+    //T(N) = NLogN + N^2 , O(N) = N^2
+    int n = arr.size();
+    sort(arr.begin(), arr.end());
+    vector<vector<int>> ans;
+    
+    for(int i=0; i<n; ++i){
+        
+        //removing duplicacy in i
+        while(i != 0 && i<n && arr[i] == arr[i-1]) i++;
+        
+        int j = i+1, k = n-1;
+        while(j < k){
+            if(arr[i] + arr[j] + arr[k] == 0){
+                ans.push_back({arr[i], arr[j], arr[k]});
+                j++; k--;
+                //removing duplicacy of j and k for a particular i
+                while(j < k && arr[j] == arr[j-1]) j++;
+                while(k > j && arr[k] == arr[k+1]) k--;
+            } 
+            else if(arr[i] + arr[j] + arr[k] > 0){
+                k--;
+            }
+            else{
+                j++;
+            }
+        }
+    }
+    return ans;
+}
+
+//18
+vector<vector<int>> fourSum(vector<int>& arr, int target) {
+    // nlogn + n^3
+    int n = arr.size();
+    sort(arr.begin(), arr.end());
+    vector<vector<int>> ans;
+    
+    for(int i=0; i<n; ++i){
+        //removing i duplicacy
+        while(i != 0 && i<n && arr[i] == arr[i-1]) i++;
+        
+        for(int j=i+1; j<n; ++j){
+            
+            //removing j duplicacy for a particular i
+            while(j != i+1 && j < n && arr[j] == arr[j-1]) j++;
+            int k = j + 1, l = n - 1;
+            
+            while(k < l){
+                
+                if(arr[i] + arr[j] + arr[k] + arr[l] == target){
+                    ans.push_back({arr[i], arr[j], arr[k], arr[l]});
+                    k++; l--;
+                    //removing k and l duplicacy for a particular j and i
+                    while(k < l && arr[k] == arr[k-1]) k++;
+                    while(l > k && arr[l] == arr[l+1]) l--;  
+                }
+                else if(arr[i] + arr[j] + arr[k] + arr[l] < target){
+                    k++;
+                }
+                else{
+                    l--;
+                }
+                
+            }
+            
+        }
+    }
+    return ans;
+}
