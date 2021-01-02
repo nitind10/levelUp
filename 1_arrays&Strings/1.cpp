@@ -617,5 +617,68 @@ int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {
     return count;
 }
 
+//363
+int maxSumSubmatrix(vector<vector<int>>& matrix, int k) {
+    int n = matrix.size(), m = matrix[0].size();
+    for(int i = 1;i<n;i++){
+        for(int j = 0;j<m;j++)
+            matrix[i][j] += matrix[i-1][j];
+    }
 
+    int maxSum = -1e9;
+    for(int base = 0; base < n;base++){ 
 
+        for(int row = base;row < n;row++){
+            
+            
+            int gSum = -1e9, rsum = 0;
+            for(int j = 0; j < m; j++){
+                int val  = matrix[row][j] - (base != 0 ? matrix[base - 1][j] : 0);
+                
+                rsum = max(val,rsum + val);
+                gSum = max(gSum, rsum);
+
+                if(gSum == k) return k;
+            }
+            
+            if(gSum < k){
+                maxSum = max(maxSum, gSum);
+                continue;
+            }
+            
+            
+            set<int> map;
+            int sum = 0;
+            map.insert(0);
+
+            for(int j = 0; j <m ; j++){
+                sum += matrix[row][j] - (base != 0 ? matrix[base - 1][j] : 0);
+                
+                if(map.find(sum - k) != map.end()) return k;
+                
+                auto it = map.upper_bound(sum - k);
+                if(it != map.end()){
+                    maxSum = max(maxSum,sum - (*it));
+                }
+                map.insert(sum);
+            }
+        } 
+    }
+    return maxSum;
+}
+
+//152
+int maxProduct(vector<int>& nums) {
+    int n = nums.size();
+    if(n == 0) return 0;
+    
+    int ans = nums[0];
+    int left = 0, right = 0;
+    
+    for(int i=0; i<n; ++i){
+        left = (left == 0 ? 1 : left) * nums[i];
+        right = (right ==0 ? 1 : right) * nums[n-i-1];
+        ans = max(ans, max(left, right));
+    }
+    return ans;
+}

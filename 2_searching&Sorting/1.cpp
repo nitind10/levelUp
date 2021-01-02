@@ -390,7 +390,7 @@ vector<int> twoSum(vector<int>& numbers, int target) {
 //15
 vector<vector<int>> threeSum(vector<int>& arr) {
     
-    //T(N) = NLogN + N^2 , O(N) = N^2
+    //T(N) = NLogN + N^2 i.e O(N) = N^2, space constant
     int n = arr.size();
     sort(arr.begin(), arr.end());
     vector<vector<int>> ans;
@@ -422,7 +422,7 @@ vector<vector<int>> threeSum(vector<int>& arr) {
 
 //18
 vector<vector<int>> fourSum(vector<int>& arr, int target) {
-    // nlogn + n^3
+    // nlogn + n^3 , space constant
     int n = arr.size();
     sort(arr.begin(), arr.end());
     vector<vector<int>> ans;
@@ -458,4 +458,116 @@ vector<vector<int>> fourSum(vector<int>& arr, int target) {
         }
     }
     return ans;
+}
+
+//454
+//time n^2 logn , space n^2
+int _4sumCount(vector<int>& ab, vector<int>& cd){
+    int count = 0;
+    sort(ab.begin(), ab.end());
+    sort(cd.begin(), cd.end());
+    int i = 0, j = cd.size() - 1;
+    
+    while(i < ab.size() && j > -1){
+        if(ab[i] + cd[j] == 0){
+            int countab = 1, countcd = 1;
+            while(++i < ab.size() && ab[i] == ab[i-1]) countab++;
+            while(--j > -1 && cd[j] == cd[j+1]) countcd++;
+            count += countab * countcd;
+        }
+        else if(ab[i] + cd[j] > 0){
+            j--;
+            
+        }
+        else{
+            i++;
+        }
+    }
+    
+    return count;
+}
+int fourSumCount(vector<int>& A, vector<int>& B, vector<int>& C, vector<int>& D) {
+    int n = A.size();
+    vector<int> ab, cd;
+    for(int i=0; i<n; ++i){
+        for(int j=0; j<n; ++j){
+            ab.push_back(A[i] + B[j]);
+            cd.push_back(C[i] + D[j]);
+        }
+    }
+    return _4sumCount(ab, cd);   
+}
+
+//240
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    int r = matrix.size();
+    int c = matrix[0].size();
+    
+    int i = 0, j = c - 1;
+    while(i < r && j > -1){
+        if(matrix[i][j] == target) return true;
+        else if(matrix[i][j] < target) i++;
+        else j--;
+    }
+    return false;
+}
+
+//4
+double findMedianSortedArrays(vector<int>& arr1, vector<int>& arr2) {
+    //https://www.youtube.com/watch?v=LPFhl65R7ww&t=444s best explanation
+    //O(min(log(m,n))) , space constant
+    int m = arr1.size();
+    int n = arr2.size();
+    if(m > n){
+        return findMedianSortedArrays(arr2, arr1);
+    }
+    
+    int si = 0, ei = m, mid;
+    
+    while(si <= ei){
+        int partition1 = (si + ei)/2;
+        int partition2 = (m + n +1)/2 - partition1;
+        
+        int maxLeft1 = (partition1 == 0) ? INT_MIN : arr1[partition1 - 1];
+        int minRight1 = (partition1 == m) ? INT_MAX : arr1[partition1];
+        
+        int maxLeft2 = (partition2 == 0) ? INT_MIN : arr2[partition2 - 1];
+        int minRight2 = (partition2 == n) ? INT_MAX : arr2[partition2];
+        
+        if(maxLeft1 <= minRight2 && maxLeft2 <= minRight1){
+            //total elements are odd
+            if((m + n) & 1){
+                return max(maxLeft1, maxLeft2) * 1.0;
+            }
+            else{//even total elements
+                return (max(maxLeft1, maxLeft2) + min(minRight1, minRight2)) / 2.0;
+            }
+        }
+        else if(maxLeft1 > minRight2){
+            ei = partition1 - 1;
+        }
+        else{ //maxLeft2 > minRight1
+            si = partition1 + 1;
+        }
+    }
+    
+    //will never reach here
+    return 0.0;
+}
+
+//134
+int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+    int extraGas = 0, deficit = 0, sp = 0;
+    for(int i=0; i<gas.size(); ++i){
+        extraGas += gas[i] - cost[i];
+        if(extraGas < 0){
+            sp = i+1;
+            deficit += extraGas;
+            extraGas = 0;
+        }
+    }
+    
+    // both are correct
+    // return ((extraGas + deficit) >= 0 ) ? sp : -1;
+    return (sp == gas.size() || extraGas + deficit < 0) ? -1 : sp;
 }
