@@ -162,6 +162,120 @@ vector<string> printPath(int m[MAX][MAX], int n) {
     return ans;
 }
 
+//https://practice.geeksforgeeks.org/problems/rat-maze-with-multiple-jumps/0#
+void display(vector<vector<int>>& ans){
+    for(int i=0; i<ans.size(); ++i){
+        for(int j=0; j<ans[0].size(); ++j){
+            cout  << ans[i][j] <<  " ";
+        }
+        cout << endl;
+    }
+}
+bool mazeSolver(vector<vector<int>>& maze, vector<vector<int>>& ans, int sr, int sc, int dr, int dc, vector<vector<int>>& dir){
+    
+    if(sr == dr && sc == dc){
+        ans[sr][sc] = 1;
+        display(ans);
+        ans[sr][sc] = 0;
+        return true;
+    }
+    
+    //mark yourself in path
+    ans[sr][sc] = 1;
+    bool res = false;
+    
+    for(int rad = 1; rad <= maze[sr][sc]; ++rad){
+        for(int call = 0; call < dir.size(); ++call){
+            int r = sr + rad * dir[call][0];
+            int c = sc + rad * dir[call][1];
+            if(r >= 0 && r <= dr && c >=0 && c <= dc)
+                res = res || mazeSolver(maze, ans, r, c, dr, dc, dir); //will not call, after recieving 1st true
+        }
+    }
+    
+    ans[sr][sc] = 0;
+    return res;
+}
+void inputfn(){
+    int n;
+    cin >> n;
+    vector<vector<int>> maze(n, vector<int>(n, 0));
+    for(int i=0; i<n; ++i){
+        for(int j=0; j<n; ++j){
+            cin >> maze[i][j];
+        }
+    }
+    bool res = false;
+    if(maze[0][0] != 0){
+        vector<vector<int>> ans(n, vector<int>(n, 0));
+        vector<vector<int>> dir = { {0, 1}, {1, 0} };
+        res = mazeSolver(maze, ans, 0, 0, n-1, n-1, dir);
+    }
 
+    if(res == false){
+        cout << -1 << endl;
+    }
+}
+
+//longest & shortest path to destination
+pair<int, string> longest(int sr, int sc, int dr, int dc, vector<vector<int>>& vis, vector<vector<int>>& dir, vector<string>& dirS){
+    if(sr == dr && sc == dc){
+        return {0, ""};
+    }
+    pair<int, string> ans = {-1, ""};
+    vis[sr][sc] = 1;
+    for(int i=0; i<dirS.size(); ++i){
+        int r = sr + dir[i][0];
+        int c = sc + dir[i][1];
+        if(r >=0 && r <= dr && c >=0 && c <= dc && vis[r][c] != 1){
+            pair<int, string> rres = longest(r, c, dr, dc, vis, dir, dirS);
+            // rres,first >= 0 is put for avoiding blockage area return and comparisons 
+            if(rres.first >= 0 && rres.first + 1 > ans.first){
+                ans.first = rres.first + 1;
+                ans.second = dirS[i] + rres.second;
+            }
+        }
+            
+    }
+    vis[sr][sc] = 0;
+    return ans;
+}
+pair<int, string> shortest(int sr, int sc, int dr, int dc, vector<vector<int>>& vis, vector<vector<int>>& dir, vector<string>& dirS){
+    if(sr == dr && sc == dc){
+        return {0, ""};
+    }
+    pair<int, string> ans = {INT_MAX, ""};
+    vis[sr][sc] = 1;
+    for(int i=0; i<dirS.size(); ++i){
+        int r = sr + dir[i][0];
+        int c = sc + dir[i][1];
+        if(r >=0 && r <= dr && c >=0 && c <= dc && vis[r][c] != 1){
+            pair<int, string> rres = shortest(r, c, dr, dc, vis, dir, dirS);
+            // rres,first != INT_MAX  is very imp, bcoz if we get lost(cell other than desitnation) and cant move anywhere we'll return intmax but cant do intmax+1, therefore dont compare for it
+            if( rres.first != INT_MAX && rres.first + 1 < ans.first){
+                ans.first = rres.first + 1;
+                ans.second = dirS[i] + rres.second;
+            }
+        }
+            
+    }
+    vis[sr][sc] = 0;
+    return ans;
+}
+void inputfn(){
+    int r, c;
+    cin >> r >> c;
+    vector<string> dirS = { "U", "D", "L", "R"};
+    vector<vector<int> > dir = {{-1,0}, {1,0}, {0, -1}, {0, 1}};
+    //considering no blockage here, can put cases like 0,0 should not be blocked etc if there was blockage
+    vector<vector<int>> vis(r, vector<int> (c, 0));
+    pair<int, string> ans = longest(0, 0, r-1, c-1, vis, dir, dirS);
+    cout << ans.first << " " << ans.second << endl;
+    pair<int, string> ans2 = shortest(0, 0, r-1, c-1, vis, dir, dirS);
+    cout << ans2.first << " " << ans2.second << endl;
+}
+
+
+ 
 
 
