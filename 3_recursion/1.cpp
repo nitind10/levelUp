@@ -1,3 +1,5 @@
+//contains question till shortest longest path in maze
+
 // keypad extention, 10 = "+-*" , 11 = "/%^"
 static string keypad[] = {
     ".;",
@@ -274,8 +276,3 @@ void inputfn(){
     pair<int, string> ans2 = shortest(0, 0, r-1, c-1, vis, dir, dirS);
     cout << ans2.first << " " << ans2.second << endl;
 }
-
-
- 
-
-
