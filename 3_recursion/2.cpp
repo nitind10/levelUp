@@ -60,3 +60,73 @@ int singleCoinPermute(vector<int>& coins, int target, string ans){
     return count;
 }
 
+//single coin combinations using subsequence approach
+int singleCoinCombinationSubSeq(vector<int>& coins, int target, int idx, string ans){
+    if(idx == coins.size() || target == 0){
+        if(target == 0){
+            cout << ans << endl;
+            return 1;
+        }
+        return 0;
+    }
+    int count = 0;
+    if(target - coins[idx] >= 0)
+        count += singleCoinCombinationSubSeq(coins, target - coins[idx], idx + 1, ans + to_string(coins[idx]));
+    count += singleCoinCombinationSubSeq(coins, target, idx + 1, ans);
+    return count;
+}
+
+//infinite coin comination subsequence approach
+int infCoinCombinationSubSeq(vector<int>& coins, int target, int idx, string ans){
+    if(idx == coins.size() || target == 0){
+        if(target == 0){
+            cout << ans << endl;
+            return 1;
+        }
+        return 0;
+    }
+    int count = 0;
+    if(target - coins[idx] >= 0){
+        count += infCoinCombinationSubSeq(coins, target - coins[idx], idx, ans + to_string(coins[idx]));
+    }
+    count += infCoinCombinationSubSeq(coins, target, idx + 1, ans);
+    return count;
+}
+
+//infinite coin permutation subsequence approach
+int infCoinPermutationSubSeq(vector<int>& coins, int target, int idx, string ans){
+    if(idx == coins.size() || target == 0){
+        if(target == 0){
+            cout << ans << endl;
+            return 1;
+        }
+        return 0;
+    }
+    int count = 0;
+    if(target - coins[idx] >= 0){
+        count += infCoinPermutationSubSeq(coins, target - coins[idx], 0, ans + to_string(coins[idx]));
+    }
+    count += infCoinPermutationSubSeq(coins, target, idx + 1, ans);
+    return count;
+}
+
+//single coin permutation subsequence approach
+int singleCoinPermutationSubSeq(vector<int>& coins, int target, int idx, string ans){
+    if(idx == coins.size() || target == 0){
+        if(target == 0){
+            cout << ans << endl;
+            return 1;
+        }
+        return 0;
+    }
+    int count = 0;
+    if(target - coins[idx] >= 0 && coins[idx] > 0){
+        int ele = coins[idx];
+        coins[idx] *= -1;
+        count += singleCoinPermutationSubSeq(coins, target - ele, 0, ans + to_string(ele));
+        coins[idx] *= -1;
+    }
+    count += singleCoinPermutationSubSeq(coins, target, idx + 1, ans);
+    return count;
+}
+
