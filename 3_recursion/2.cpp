@@ -130,3 +130,24 @@ int singleCoinPermutationSubSeq(vector<int>& coins, int target, int idx, string 
     return count;
 }
 
+//https://www.interviewbit.com/problems/subset/
+void subsetRec(vector<int> &A, int idx, vector<vector<int>>& ans, vector<int>& inhand){
+    ans.push_back(inhand);
+    
+    for(int i = idx; i < A.size(); ++i){
+        inhand.push_back(A[i]);
+        subsetRec(A, i + 1, ans, inhand);
+        inhand.pop_back();
+    }
+        
+}
+vector<vector<int> > Solution::subsets(vector<int> &A) {
+    vector<vector<int>> ans;
+    sort(A.begin(), A.end());
+    vector<int> inhand = {};
+    subsetRec(A, 0, ans, inhand);
+    return ans;
+}
+
+
+
