@@ -195,7 +195,102 @@ vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
     return ans;
 }
 
+//216
+void recCombinationIII(vector<vector<int>>& ans, vector<int>& inhand, int idx, int target, int k, int level){
+    if(target == 0 && level == k){
+        ans.push_back(inhand);
+        return;
+    }
+    for(int i = idx; i < 9; ++i){
+        if(target - (i + 1) >= 0 && level + 1 <= k){
+            inhand.push_back(i + 1);
+            recCombinationIII(ans, inhand, i + 1, target - (i + 1), k, level + 1);
+            inhand.pop_back();
+        }
+    }
+}
+vector<vector<int>> combinationSum3(int k, int target) {
+    vector<vector<int>> ans;
+    vector<int> inhand;
+    recCombinationIII(ans, inhand, 0, target, k, 0);
+    return ans;
+}
 
+//77
+void Combinations(vector<vector<int>>& ans, vector<int>& inhand, int idx, int k, int level, int n){
+    if(level == k){
+        ans.push_back(inhand);
+        return;
+    }
+    for(int i = idx; i < n; ++i){
+        if(level + 1 <= k){
+            inhand.push_back(i + 1);
+            Combinations(ans, inhand, i + 1, k, level + 1, n);
+            inhand.pop_back();
+        }
+    }
+}
+vector<vector<int>> combine(int n, int k) {
+    vector<vector<int>> ans;
+    vector<int> inhand;
+    Combinations(ans, inhand, 0, k, 0, n);
+    return ans;
+}
+
+//46
+void recPermute(vector<int>& nums, vector<vector<int>>& ans, vector<int>& inhand){
+    if(inhand.size() == nums.size()){
+        ans.push_back(inhand);
+        return;
+    }
+    for(int i = 0; i < nums.size(); ++i){
+        if(nums[i] >= -10){
+            inhand.push_back(nums[i]);
+            int ele = nums[i];
+            nums[i] = -11;
+            recPermute(nums, ans, inhand);
+            nums[i] = ele;
+            inhand.pop_back();
+        }   
+    }
+}
+vector<vector<int>> permute(vector<int>& nums) {
+    vector<vector<int>> ans;
+    vector<int> inhand;
+    recPermute(nums, ans, inhand);
+    return ans;
+}
+
+//47
+void recPermuteUnique(vector<int>& nums, vector<vector<int>>& ans, vector<int>& inhand){
+    if(inhand.size() == nums.size()){
+        ans.push_back(inhand);
+        return;
+    }
+    
+    vector<bool> visited(21, false);
+    
+    for(int i = 0; i < nums.size(); ++i){
+        
+        if(nums[i] >= -10 && visited[nums[i] + 10] == false){
+            visited[nums[i] + 10] = true;
+            
+            int ele = nums[i];
+            inhand.push_back(ele);
+            nums[i] = -11;
+            recPermuteUnique(nums, ans, inhand);
+            inhand.pop_back();
+            nums[i] = ele;
+            
+        }
+    }
+}
+vector<vector<int>> permuteUnique(vector<int>& nums) {
+    vector<vector<int>> ans;
+    vector<int> inhand;
+    recPermuteUnique(nums, ans, inhand);
+    return ans;
+}
 
 
 
