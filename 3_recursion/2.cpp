@@ -149,5 +149,53 @@ vector<vector<int> > Solution::subsets(vector<int> &A) {
     return ans;
 }
 
+//39
+void recCombinations(vector<int>& candidates, int target, int idx, vector<int>& inhand, vector<vector<int>>& ans){
+    if(target == 0){
+        ans.push_back(inhand);
+        return;
+    }
+    for(int i= idx; i < candidates.size(); ++i){
+        if(target - candidates[i] >= 0){
+            inhand.push_back(candidates[i]);
+            recCombinations(candidates, target - candidates[i], i, inhand, ans);
+            inhand.pop_back();
+        }
+    }
+}
+vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+    vector<vector<int>> ans;
+    vector<int> inhand;
+    recCombinations(candidates, target, 0, inhand, ans);
+    return ans;
+}
+
+//40
+void recCombinationsII(vector<int>& candidates, int target, int idx, vector<int>& inhand, vector<vector<int>>& ans){
+    if(target == 0){
+        ans.push_back(inhand);
+        return;
+    }
+    for(int i = idx; i < candidates.size(); ++i){
+        int j = i;
+        while(i + 1 < candidates.size() && candidates[i] == candidates[i + 1])
+            i++;
+        if(target - candidates[j] >= 0){
+            inhand.push_back(candidates[j]);
+            recCombinationsII(candidates, target - candidates[i], j + 1, inhand, ans);
+            inhand.pop_back();
+        }
+    }
+}
+vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+    vector<vector<int>> ans;
+    vector<int> inhand;
+    sort(candidates.begin(), candidates.end());
+    recCombinationsII(candidates, target, 0, inhand, ans);
+    return ans;
+}
+
+
+
 
 
