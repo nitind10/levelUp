@@ -171,3 +171,25 @@ int nQueens2(int idx, int n, int currQueens, int totalQueens, string ans){
     }
     return count;
 }
+
+//nQueen3 - same as nQueen2, just print all permutations
+int nQueens3(int n, int currQueens, int totalQueens, string ans, vector<vector<bool>>& board){
+    if(currQueens == totalQueens){
+        cout << ans << endl;
+        return 1;
+    }
+    int count = 0;
+
+    for(int i = 0; i < n * n; ++i){ 
+        int r = i / n;
+        int c = i % n;
+        if(!board[r][c] && !row[r] && !col[c] && !diagonal[r - c + n - 1] && !antiDiagonal[r + c]){
+            board[r][c] = true;
+            toggle(r, c, n);
+            count += nQueens3(n, currQueens + 1, totalQueens, ans + "(" + to_string(r) + "," + to_string(c) + ") ", board);
+            toggle(r, c, n);
+            board[r][c] = false;
+        }
+    }
+    return count;
+}
