@@ -64,7 +64,7 @@ int queensInBoxes2DPermutations(int boxes, int queens, int currBox, string ans, 
     return count;
 }
 
-// nqueens1 - least optimized - we go to every box check for safety(O(N)) and then place
+// nqueens1 - least optimized - we go to every box check for safety(O(N)) and then placing
 bool isSafe(int currRow, int currCol, vector<vector<bool>>& board){
     vector<vector<int>> dir = {{0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
     int r = board.size(); int c = board[0].size();
@@ -99,6 +99,34 @@ int nQueens1(int idx, int n, vector<vector<bool>>& board, int currQueens, int to
             board[r][c] = true;
             count += nQueens1(i + 1, n, board, currQueens + 1, totalQueens, ans + "(" + to_string(r) + "," + to_string(c) + ") ");
             board[r][c] = false;
+        }
+    }
+    return count;
+}
+
+//nqueens2 - slightly optimized from 1 as checking safety is O(1), by using 4 arrays, also not keeping board matrix
+//resize these vectors in main
+vector<bool> row, col, diagonal, antiDiagonal;
+void toggle(int r, int c, int n){
+    row[r] = !row[r];
+    col[c] = !col[c];
+    diagonal[r - c + n - 1] = !diagonal[r - c + n - 1];
+    antiDiagonal[r + c] = !antiDiagonal[r + c];
+ }
+int nQueens2(int idx, int n, int currQueens, int totalQueens, string ans){
+    if(currQueens == totalQueens){
+        cout << ans << endl;
+        return 1;
+    }
+    int count = 0;
+
+    for(int i = idx; i < n * n; ++i){ 
+        int r = i / n;
+        int c = i % n;
+        if(!row[r] && !col[c] && !diagonal[r - c + n - 1] && !antiDiagonal[r + c]){
+            toggle(r, c, n);
+            count += nQueens2(i + 1, n, currQueens + 1, totalQueens, ans + "(" + to_string(r) + "," + to_string(c) + ") ");
+            toggle(r, c, n);
         }
     }
     return count;
