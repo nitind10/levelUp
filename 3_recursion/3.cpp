@@ -32,6 +32,46 @@ int queensInBoxes1DPermutations(int boxes, int queens, int currBox, int currQuee
     return count;
 }
 
+//combination of queens in boxes (1D) SubSeq method
+int queensInBoxes1DCombinationsSubSeq(int boxes, int queens, int currBox, int currQueen, string ans){
+
+    if(currBox == boxes || currQueen == queens){
+        if(currQueen == queens){
+            cout << ans << endl;
+            return 1;
+        }
+        return 0;
+    }
+    int count = 0;
+    
+    count += queensInBoxes1DCombinationsSubSeq(boxes, queens, currBox + 1, currQueen + 1, ans + "b" + to_string(currBox) + "q" + to_string(currQueen));
+    count += queensInBoxes1DCombinationsSubSeq(boxes, queens, currBox + 1, currQueen, ans);
+    
+    return count;
+}
+
+//permutation of queens in boxes (1D) SubSeq method
+int queensInBoxes1DPermutationsSubSeq(int boxes, int queens, int currBox, int currQueen, string ans, vector<bool>& visited){
+
+    if(currBox == boxes || currQueen == queens){
+        if(currQueen == queens){
+            cout << ans << endl;
+            return 1;
+        }
+        return 0;
+    }
+    int count = 0;
+    
+    if(!visited[currBox]){
+        visited[currBox] = true;
+        count += queensInBoxes1DPermutationsSubSeq(boxes, queens, 0, currQueen + 1, ans + "b" + to_string(currBox) + "q" + to_string(currQueen), visited);
+        visited[currBox] = false;
+    }
+    count += queensInBoxes1DPermutationsSubSeq(boxes, queens, currBox + 1, currQueen, ans, visited);
+    
+    return count;
+}
+
 //combinations of queens in boxes (2D)
 int queensInBoxes2DCombinations(int boxes, int queens, int currBox, string ans, int cols){
 
