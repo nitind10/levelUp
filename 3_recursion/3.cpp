@@ -63,3 +63,43 @@ int queensInBoxes2DPermutations(int boxes, int queens, int currBox, string ans, 
     }
     return count;
 }
+
+// nqueens1 - least optimized - we go to every box check for safety(O(N)) and then place
+bool isSafe(int currRow, int currCol, vector<vector<bool>>& board){
+    vector<vector<int>> dir = {{0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+    int r = board.size(); int c = board[0].size();
+    
+    for(int j = 0; j < dir.size(); ++j){
+        for(int rad = 1; rad < max(r, c); ++rad){
+            int rIdx = currRow + rad * dir[j][0];
+            int cIdx = currCol + rad * dir[j][1];
+
+            if(rIdx > -1 && rIdx < r && cIdx > -1 && cIdx < c){
+                if(board[rIdx][cIdx])
+                    return false;
+            }
+            else{
+                break;
+            }
+        }
+    }
+    return true;
+}
+int nQueens1(int idx, int n, vector<vector<bool>>& board, int currQueens, int totalQueens, string ans){
+    if(currQueens == totalQueens){
+        cout << ans << endl;
+        return 1;
+    }
+
+    int count = 0;
+    for(int i = idx; i < n * n; ++i){ 
+        int r = i / n;
+        int c = i % n;
+        if(isSafe(r, c, board)){
+            board[r][c] = true;
+            count += nQueens1(i + 1, n, board, currQueens + 1, totalQueens, ans + "(" + to_string(r) + "," + to_string(c) + ") ");
+            board[r][c] = false;
+        }
+    }
+    return count;
+}
