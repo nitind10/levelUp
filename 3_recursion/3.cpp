@@ -193,3 +193,21 @@ int nQueens3(int n, int currQueens, int totalQueens, string ans, vector<vector<b
     }
     return count;
 }
+
+//nQueens4 only 1 quuen can sit in each row
+int nQueens4(int r, int n, int totalQueens, string ans){
+    if(totalQueens == 0){
+        cout << ans << endl;
+        return 1;
+    }
+    int count = 0;
+
+    for(int c = 0; c < n; ++c){ 
+        if(!col[c] && !diagonal[r - c + n - 1] && !antiDiagonal[r + c]){
+            toggle(r, c, n);
+            count += nQueens4(r + 1, n, totalQueens - 1, ans + "(" + to_string(r) + "," + to_string(c) + ") ");
+            toggle(r, c, n);
+        }
+    }
+    return count;
+}
