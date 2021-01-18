@@ -289,3 +289,40 @@ vector<vector<string>> solveNQueens(int n) {
     nQueens5(0, n, inhand, ans);
     return ans;
 }
+
+//52
+int colBits = 0, diagonalBits = 0, antiDiagonalBits = 0;
+bool isSet(int r, int c, int n){
+    int maskC = (1 << c);
+    int maskD = (1 << (r - c + n - 1));
+    int maskAD = (1 << (r + c));
+    if( (colBits & maskC) != 0 || (diagonalBits & maskD) != 0 || (antiDiagonalBits & maskAD) != 0)
+        return true;
+    return false;
+}
+void toggleBits(int r, int c, int n){
+    int maskC = (1 << c);
+    int maskD = (1 << (r - c + n - 1));
+    int maskAD = (1 << (r + c));
+
+    colBits ^= maskC;
+    diagonalBits ^= maskD;
+    antiDiagonalBits ^= maskAD;
+}
+int nQueens5(int r, int n){
+    if(r == n){
+        return 1;
+    }
+    int count = 0;
+    for(int c = 0; c < n; ++c){
+        if(!isSet(r, c, n)){
+            toggleBits(r, c, n);
+            count += nQueens5(r + 1, n);
+            toggleBits(r, c, n);
+        }
+    }
+    return count;
+} 
+int totalNQueens(int n) {
+    return nQueens5(0, n);
+}
