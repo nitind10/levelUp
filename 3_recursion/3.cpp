@@ -211,3 +211,38 @@ int nQueens4(int r, int n, int totalQueens, string ans){
     }
     return count;
 }
+
+//nQueens5 using bitmasking instead of keeping 1D arrays
+int colBits = 0, diagonalBits = 0, antiDiagonalBits = 0;
+bool isSet(int r, int c, int n){
+    int maskC = (1 << c);
+    int maskD = (1 << (r - c + n - 1));
+    int maskAD = (1 << (r + c));
+    if( (colBits & maskC) != 0 || (diagonalBits & maskD) != 0 || (antiDiagonalBits & maskAD) != 0)
+        return true;
+    return false;
+}
+void toggleBits(int r, int c, int n){
+    int maskC = (1 << c);
+    int maskD = (1 << (r - c + n - 1));
+    int maskAD = (1 << (r + c));
+
+    colBits ^= maskC;
+    diagonalBits ^= maskD;
+    antiDiagonalBits ^= maskAD;
+}
+int nQueens5(int r, int n, int totalQueens, string ans){
+    if(totalQueens == 0){
+        cout << ans << endl;
+        return 1;
+    }
+    int count = 0;
+    for(int c = 0; c < n; ++c){
+        if(!isSet(r, c, n)){
+            toggleBits(r, c, n);
+            count += nQueens5(r + 1, n, totalQueens - 1, ans + "(" + to_string(r) + "," + to_string(c) + ") ");
+            toggleBits(r, c, n);
+        }
+    }
+    return count;
+} 
