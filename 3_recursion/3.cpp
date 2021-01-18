@@ -245,4 +245,47 @@ int nQueens5(int r, int n, int totalQueens, string ans){
         }
     }
     return count;
+}
+
+//51
+int colBits = 0, diagonalBits = 0, antiDiagonalBits = 0;
+bool isSet(int r, int c, int n){
+    int maskC = (1 << c);
+    int maskD = (1 << (r - c + n - 1));
+    int maskAD = (1 << (r + c));
+    if( (colBits & maskC) != 0 || (diagonalBits & maskD) != 0 || (antiDiagonalBits & maskAD) != 0)
+        return true;
+    return false;
+}
+void toggleBits(int r, int c, int n){
+    int maskC = (1 << c);
+    int maskD = (1 << (r - c + n - 1));
+    int maskAD = (1 << (r + c));
+
+    colBits ^= maskC;
+    diagonalBits ^= maskD;
+    antiDiagonalBits ^= maskAD;
+}
+void nQueens5(int r, int n, vector<string>& inhand, vector<vector<string>>& ans){
+    if(r == n){
+        ans.push_back(inhand);
+        return;
+    }
+    for(int c = 0; c < n; ++c){
+        if(!isSet(r, c, n)){
+            toggleBits(r, c, n);
+            string s(n, '.');
+            s[c] = 'Q';
+            inhand.push_back(s);
+            nQueens5(r + 1, n, inhand, ans);
+            toggleBits(r, c, n);
+            inhand.pop_back();
+        }
+    }
 } 
+vector<vector<string>> solveNQueens(int n) {
+    vector<vector<string>> ans;
+    vector<string> inhand;
+    nQueens5(0, n, inhand, ans);
+    return ans;
+}
