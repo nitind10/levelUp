@@ -141,3 +141,28 @@ bool sudoku2(int idx){
     }
     return res;
 }
+
+//sudoku3 - most optimized - only travelling to blank locations
+//loc has only those idx which are blank(mapped as 1D indices)
+bool sudoku3(vector<int>& loc, int idx){
+    if(idx == loc.size()){
+        display();
+        return true;
+    }
+
+    bool res = false;
+    int r = loc[idx] / 9;
+    int c = loc[idx] % 9;
+
+    for(int n = 1; n <= 9; ++n){
+        if(!isValid(r, c, n)){
+            board[r][c] = n;
+            toggleBits(r, c, n);
+            res = res || sudoku3(loc, idx + 1);
+            toggleBits(r, c, n);
+            board[r][c] = 0;
+        }
+    }
+    return res;
+}
+
