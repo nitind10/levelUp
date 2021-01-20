@@ -115,3 +115,29 @@ int sudoku1(int idx)
     }
     return count;
 }
+
+//Sudoku 2 - prints 1st solution
+bool sudoku2(int idx){
+    if(idx == 81){
+        display();
+        return true;
+    }
+
+    bool res = false;
+    int r = idx / 9;
+    int c = idx % 9;
+
+    if(board[r][c] != 0)
+        return sudoku2(idx + 1);
+
+    for(int n = 1; n <= 9; ++n){
+        if(!isValid(r, c, n)){
+            board[r][c] = n;
+            toggleBits(r, c, n);
+            res = res || sudoku2(idx + 1);
+            toggleBits(r, c, n);
+            board[r][c] = 0;
+        }
+    }
+    return res;
+}
