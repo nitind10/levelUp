@@ -222,4 +222,33 @@ void solveSudoku(vector<vector<char>>& board) {
     sudoku3(loc, 0, board);
 }
 
+//36
+vector<int> rowBits;
+vector<int> colBits;
+vector<int> matrixBits;
+void setBit(int r, int c, int n){
+    int mask = (1 << n);
+    rowBits[r] |= mask;
+    colBits[c] |= mask;
+    matrixBits[((r/3) * 3) + (c/3)] |= mask;
+}
+bool isValidSudoku(vector<vector<char>>& board) {
+    rowBits.resize(9, 0);
+    colBits.resize(9, 0);
+    matrixBits.resize(9, 0);
+
+    for(int i = 0; i < 9; ++i){
+        for(int j = 0; j < 9; ++j){
+            if(board[i][j] != '.'){
+                int mask = (1 << (board[i][j] - '0'));
+                if( ((rowBits[i] & mask) == 0) && ((colBits[j] & mask) == 0) && ((matrixBits[((i/3) * 3) + (j/3)] & mask) == 0) ){
+                    setBit(i, j, (board[i][j] - '0'));
+                }
+                else
+                    return false;
+            }
+        }
+    }
+    return true;
+}
 
