@@ -166,3 +166,60 @@ bool sudoku3(vector<int>& loc, int idx){
     return res;
 }
 
+//37
+vector<int> rowBits;
+vector<int> colBits;
+vector<int> matrixBits;
+
+void toggleBits(int r, int c, int n){
+    int mask = (1 << n);
+    rowBits[r] ^= mask;
+    colBits[c] ^= mask;
+    matrixBits[(r / 3) * 3 + (c / 3)] ^= mask;
+}
+void initialToggle(vector<vector<char>>& board){
+    for(int i = 0; i < 9; ++i){
+        for(int j = 0; j < 9; ++j){
+            if(board[i][j] != '.')
+                toggleBits(i, j, (board[i][j] - '0'));
+        }
+    }
+}
+bool sudoku3(vector<int>& loc, int idx, vector<vector<char>>& board){
+if(idx == loc.size())
+    return true;
+
+bool res = false;
+int r = loc[idx] / 9;
+int c = loc[idx] % 9;
+
+for(int n = 1; n <= 9; ++n){
+    int mask = (1 << n);
+    if( ((rowBits[r] & mask) == 0) && ((colBits[c] & mask) == 0) && ((matrixBits[(r / 3) * 3 + (c / 3)] & mask) == 0)              ){
+        board[r][c] = char('0' + n);
+        toggleBits(r, c, n);
+        res = res || sudoku3(loc, idx + 1, board);
+        if(res) return true;
+        toggleBits(r, c, n);
+        board[r][c] = '.';
+    }
+}
+return res;
+}
+void solveSudoku(vector<vector<char>>& board) {
+    rowBits.resize(9, 0);
+    colBits.resize(9, 0);
+    matrixBits.resize(9, 0);
+    initialToggle(board);
+    
+    vector<int> loc;
+    for(int i = 0; i < 9; ++i){
+        for(int j = 0; j < 9; ++j){
+            if(board[i][j] == '.')
+                loc.push_back((i * 9) + j);
+        }
+    }
+    sudoku3(loc, 0, board);
+}
+
+
