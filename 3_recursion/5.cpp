@@ -94,3 +94,97 @@ void wordBreak(string str, string ans, unordered_set<string>& dict, int len, int
         }
     }
 }
+
+//https://www.pepcoding.com/resources/data-structures-and-algorithms-in-java-levelup/recursion-and-backtracking/crossword-puzzle-official/ojquestion#
+bool isPossibleToPlaceH(vector<vector<char>>& arr, string word, int r, int c) {
+    for(int i=0; i<word.length(); ++i){
+        if(c + i >= arr[0].size()) 
+            return false;
+        
+        if(arr[r][c + i] != '-' && arr[r][c + i] != word[i])
+            return false;
+    }
+    return true;
+}
+vector<bool> placeH(vector<vector<char>>& arr, string word, int r, int c) {
+    vector<bool> charLoc(word.length());
+    for (int i = 0; i < word.length(); i++) {
+        if (arr[r][c + i] == '-') {
+            charLoc[i] = true;
+            arr[r][c + i] = word[i];
+        }
+    }
+
+    return charLoc;
+}
+void unPlaceH(vector<vector<char>>& arr, string word, int r, int c, vector<bool>& charLoc) {
+    for (int i = 0; i < word.length(); i++) {
+        if (charLoc[i]) {
+            arr[r][c + i] = '-';
+        }
+    }
+}
+bool isPossibleToPlaceV(vector<vector<char>>& arr, string word, int r, int c) {
+    for(int i=0; i<word.length(); ++i){
+        if(r + i >= arr.size()) 
+            return false;
+        
+        if(arr[r + i][c] != '-' && arr[r + i][c] != word[i])
+            return false;
+    }
+    return true;
+}
+vector<bool> placeV(vector<vector<char>>& arr, string word, int r, int c) {
+    vector<bool> charLoc(word.length());
+    for (int i = 0; i < word.length(); i++) {
+        if (arr[r + i][c] == '-') {
+            charLoc[i] = true;
+            arr[r + i][c] = word[i];
+        }
+    }
+    return charLoc;
+}
+void unPlaceV(vector<vector<char>>& arr, string word, int r, int c, vector<bool>& charLoc) {
+    for (int i = 0; i < word.length(); i++) {
+        if (charLoc[i]) {
+            arr[r + i][c] = '-';
+        }
+    }
+}
+void print(vector<vector<char>>& arr) {
+    for (int i = 0; i < arr.size(); i++) {
+        for (int j = 0; j < arr.size(); j++) {
+            cout << arr[i][j];
+        }
+        cout << endl;
+    }
+
+}
+void crossWord(vector<vector<char>>& arr, vector<string>& words, int vidx) {
+    if (vidx == words.size()) {
+        print(arr);
+        return;
+    }
+
+    string word = words[vidx];
+    
+    for (int r = 0; r < arr.size(); r++) {
+        for (int c = 0; c < arr[0].size(); c++) {
+            if (arr[r][c] == '-' || arr[r][c] == word[0]) {
+                
+                if (isPossibleToPlaceH(arr, word, r, c)) {
+                    vector<bool> charLoc = placeH(arr, word, r, c);
+                    crossWord(arr, words, vidx + 1);
+                    unPlaceH(arr, word, r, c, charLoc);
+                }
+                if (isPossibleToPlaceV(arr, word, r, c)) {
+                    vector<bool> charLoc = placeV(arr, word, r, c);
+                    crossWord(arr, words, vidx + 1);
+                    unPlaceV(arr, word, r, c, charLoc);
+                }
+                
+            }
+        }
+    }
+
+}
