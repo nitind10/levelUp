@@ -1,4 +1,4 @@
-//cryptoArithmetic
+//cryptoArithmetic   https://www.pepcoding.com/resources/data-structures-and-algorithms-in-java-levelup/recursion-and-backtracking/cryptarithmetic-official/ojquestion
 string s1 = "send";
 string s2 = "more";
 string s3 = "money";
@@ -36,7 +36,6 @@ int cryptoArith(string &str, int idx)
 
         return 0;
     }
-
     char ch = str[idx];
     int count = 0;
     for (int num = 0; num <= 9; num++)
@@ -77,4 +76,21 @@ void input()
 
     // cout << str << endl;
     cout << cryptoArith(str, 0) << endl;
+}
+
+//https://www.pepcoding.com/resources/data-structures-and-algorithms-in-java-levelup/recursion-and-backtracking/wordbreak1official/ojquestion#
+void wordBreak(string str, string ans, unordered_set<string>& dict, int len, int idx) {
+    // write your code here
+    if(idx == str.length()){
+        cout << ans << endl;
+        return;
+    }
+    for(int i = 1; i <= len; ++i){
+        if(idx + i <= str.length()){
+            string s = str.substr(idx, i);
+            if(dict.find(s) != dict.end()){
+                wordBreak(str, ans + s + " ", dict, len, idx + i);
+            } 
+        }
+    }
 }
