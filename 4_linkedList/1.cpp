@@ -98,3 +98,43 @@ bool isPalindrome(ListNode* head) {
     mid -> next = reverseList(head2);
     return res;
 }
+
+//143
+ListNode * middle(ListNode* head){
+        ListNode *slow = head, *fast = head;
+        while(fast -> next != nullptr && fast -> next -> next != nullptr){
+            slow = slow -> next;
+            fast = fast -> next -> next;
+        }
+        return slow;
+    }
+    ListNode* reverse(ListNode* head){
+        ListNode *prev = nullptr, *curr = head, *forw = head;
+        while(curr != nullptr){
+            forw = curr -> next;
+            curr -> next = prev;
+            prev = curr;
+            curr = forw;
+        }
+        return prev;
+    }
+    void reorderList(ListNode* head) {
+        if(head == nullptr || head -> next == nullptr)
+            return;
+        
+        ListNode *mid = middle(head);
+        ListNode *head2 = mid -> next;
+        mid -> next = nullptr;
+        
+        head2 = reverse(head2);
+        
+        ListNode *curr1 = head, *curr2 = head2, *forw1 = curr1, *forw2 = curr2;
+        while(curr1 != nullptr && curr2 != nullptr){
+            forw1 = forw1 -> next;
+            forw2 = forw2 -> next;
+            curr1 -> next = curr2;
+            curr2 -> next = forw1;
+            curr1 = forw1;
+            curr2 = forw2;
+        }
+    }
