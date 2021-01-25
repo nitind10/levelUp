@@ -22,4 +22,35 @@ ListNode* middleNode(ListNode* head) {
     return slow;
 }
 
-//
+//206
+//iterative
+ListNode* reverseList(ListNode* head) {
+    if(head == nullptr || head -> next == nullptr)
+        return head;
+    ListNode *prev = nullptr, *curr = head, *forw = head;
+    while(curr != nullptr){
+        forw = curr -> next;
+        curr -> next = prev;
+        prev = curr;
+        curr = forw;
+    }
+    //prev becomes the new head
+    return prev;
+}
+//recursive
+ListNode* reverseRec(ListNode* head){
+    if(head -> next == nullptr){
+        return head;
+    }
+    ListNode *nextNode = head -> next;
+    head -> next = nullptr;
+    ListNode *returnedHead = reverseRec(nextNode);
+    nextNode -> next = head;
+    return returnedHead;
+}
+ListNode* reverseList(ListNode* head) {
+    if(head == nullptr || head -> next == nullptr)
+        return head;
+    
+    return reverseRec(head);
+}
