@@ -87,15 +87,18 @@ bool isPalindrome(ListNode* head) {
     head2 = reverseList(head2);
     
     ListNode *temp1 = head, *temp2 = head2;
-    
+    bool res = true;
+
     while(temp1 != nullptr && temp2 != nullptr){
-        if(temp1 -> val != temp2 -> val)
-            return false;
+        if(temp1 -> val != temp2 -> val){
+            res = false;
+            break;
+        }
         temp1 = temp1 -> next;
         temp2 = temp2 -> next;
     }
 
     mid -> next = reverseList(head2);
     
-    return true;
+    return res;
 }
