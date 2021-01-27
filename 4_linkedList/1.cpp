@@ -148,9 +148,9 @@ void linkedlist :: reorderToOrignal(){
 
     //makes 1 6 2 5 3 4 to two diff lists 1 2 3, 6 5 4
     while(c1 != nullptr && c2 != nullptr){
-        if(c2 != nullptr)
-            c1 -> next = c2 -> next;
+        c1 -> next = c2 -> next;
         c1 = c1 -> next;
+
         if(c1 != nullptr)
             c2 -> next = c1 -> next;
         c2 = c2 -> next;
@@ -170,4 +170,77 @@ void linkedlist :: reorderToOrignal(){
     }
     this -> tail = c1;
 } 
+
+//21
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+    if(l1 == nullptr || l2 == nullptr)
+        return l1 == nullptr ? l2 : l1;
+    
+    ListNode *dummy = new ListNode(-1);
+    ListNode *prev = dummy, *c1 = l1, *c2 = l2;
+    
+    while(c1 != nullptr && c2 != nullptr){
+        if(c1 -> val < c2 -> val){
+            prev -> next = c1;
+            c1 = c1 -> next;
+        }else{
+            prev -> next = c2;
+            c2 = c2 -> next;
+        }
+        prev = prev -> next;   
+    }
+    
+    prev -> next = c1 == nullptr ? c2 : c1;
+    
+    ListNode *head = dummy -> next;
+    dummy -> next = nullptr;
+    delete dummy;
+    
+    return head;
+}
+
+//148
+ListNode* mergeTwoLists(ListNode *l1, ListNode *l2){
+    ListNode *dummy = new ListNode(-1);
+    ListNode *c1 = l1, *c2 = l2, *prev = dummy;
+    
+    while(c1 != nullptr && c2 != nullptr){
+        if(c1 -> val < c2 -> val){
+            prev -> next = c1;
+            c1 = c1 -> next;
+        }else{
+            prev -> next = c2;
+            c2 = c2 -> next;
+        }
+        prev = prev -> next;
+    }
+    prev -> next = c1 == nullptr ? c2 : c1;
+    ListNode *head = dummy -> next;
+    dummy -> next = nullptr;
+    delete dummy;
+    return head;
+}
+ListNode* middle(ListNode* head){
+    ListNode *slow = head, *fast = head;
+    while(fast -> next != nullptr && fast -> next -> next != nullptr){
+        slow = slow -> next;
+        fast = fast -> next -> next;
+    }
+    return slow;
+}
+ListNode* mergeSort(ListNode *head){
+    if(head -> next == nullptr)
+        return head;
+    
+    ListNode *mid = middle(head);
+    ListNode *nextToMid = mid -> next;
+    mid -> next = nullptr;
+    
+    return mergeTwoLists(mergeSort(head), mergeSort(nextToMid));
+}
+ListNode* sortList(ListNode* head) {
+    if(head == nullptr || head -> next == nullptr)
+        return head;
+    return mergeSort(head);
+}
 
