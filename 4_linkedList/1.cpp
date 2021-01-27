@@ -244,3 +244,50 @@ ListNode* sortList(ListNode* head) {
     return mergeSort(head);
 }
 
+//23
+ListNode* mergeTwoLists(ListNode *l1, ListNode *l2) {
+    if(l1 == nullptr || l2 == nullptr)
+        return l1 == nullptr ? l2 : l1;
+    
+    ListNode *dummy = new ListNode(-1);
+    ListNode *prev = dummy, *c1 = l1, *c2 = l2;
+    
+    while(c1 != nullptr && c2 != nullptr){
+        if(c1 -> val < c2 -> val){
+            prev -> next = c1;
+            c1 = c1 -> next;
+        }else{
+            prev -> next = c2;
+            c2 = c2 -> next;
+        }
+        prev = prev -> next;   
+    }
+    
+    prev -> next = c1 == nullptr ? c2 : c1;
+    
+    ListNode *head = dummy -> next;
+    dummy -> next = nullptr;
+    delete dummy;
+    
+    return head;
+}
+ListNode* recMerge(vector<ListNode*>& lists, int si, int ei){
+    if(si == ei)
+        return lists[si];
+    
+    int mid = (si + ei) / 2;
+    ListNode *l1 = recMerge(lists, si, mid);
+    ListNode *l2 = recMerge(lists, mid + 1, ei);
+    
+    ListNode *newHead = mergeTwoLists(l1, l2);
+    return newHead;
+}
+ListNode* mergeKLists(vector<ListNode*>& lists) {
+    int n = lists.size();
+    
+    if(n == 0)
+        return nullptr;
+    
+    return recMerge(lists, 0, n-1);
+}
+
