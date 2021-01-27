@@ -138,3 +138,36 @@ ListNode * middle(ListNode* head){
             curr2 = forw2;
         }
     }
+
+//recovering orignal list from reordered list
+void linkedlist :: reorderToOrignal(){
+    if(this -> head == nullptr || this -> head -> next == nullptr)
+        return;
+
+    Node *c1 = this -> head, *c2 = this -> head -> next, *head2 = c2;
+
+    //makes 1 6 2 5 3 4 to two diff lists 1 2 3, 6 5 4
+    while(c1 != nullptr && c2 != nullptr){
+        if(c2 != nullptr)
+            c1 -> next = c2 -> next;
+        c1 = c1 -> next;
+        if(c1 != nullptr)
+            c2 -> next = c1 -> next;
+        c2 = c2 -> next;
+    }
+
+    //makes list2 i.e 6 5 4 to 4 5 6
+    head2 = reverse(head2);  
+
+    //joins the two lists and updates the tail
+    c1 = this -> head;
+    while(c1 -> next != nullptr){
+        c1 = c1 -> next;
+    }
+    c1 -> next = head2; 
+    while(c1 -> next != nullptr){
+        c1 = c1 -> next;
+    }
+    this -> tail = c1;
+} 
+
