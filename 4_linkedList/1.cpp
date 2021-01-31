@@ -408,3 +408,112 @@ ListNode* removeNthFromEnd(ListNode* head, int n) {
     return head;    
 }
 
+//25
+// - my approach
+ListNode *forward = nullptr;
+int size(ListNode *head){
+    int count = 0;
+    while(head != nullptr){
+        head = head -> next;
+        count++;
+    }
+    return count;
+}
+ListNode* reverseK(ListNode *head, int k){
+    ListNode *prev = nullptr, *curr = head;
+    forward = head;
+    while(k--){
+        forward = forward -> next;
+        curr -> next = prev;
+        prev = curr;
+        curr = forward;
+    }
+    return prev;
+}
+ListNode* reverseKGroup(ListNode* head, int k) {
+    
+    ListNode *currHead = head;
+    ListNode *prevTail = nullptr;
+    
+    int n = size(head) / k;
+    
+    for(int i = 1; i <= n; ++i){
+        ListNode *newHead = reverseK(currHead, k);
+        if(i == 1) head = newHead;
+        else prevTail -> next = newHead;
+        prevTail = currHead;
+        currHead = forward;
+    }
+    
+    prevTail -> next = forward;
+    
+    return head;
+}
+//- sir's approach
+ListNode *th = nullptr;
+ListNode *tt = nullptr;
+
+void addFirstNode(ListNode *node)
+{
+    if (th == nullptr)
+    {
+        th = node;
+        tt = node;
+    }
+    else
+    {
+        node->next = th;
+        th = node;
+    }
+}
+int size(ListNode *head){
+    int count = 0;
+    while(head != nullptr){
+        head = head -> next;
+        count++;
+    }
+    return count;
+}
+ListNode *reverseKGroup(ListNode *head, int k)
+{
+    if (head == nullptr || head->next == nullptr || k == 1)
+        return head;
+
+    // original head, original tail
+    ListNode *oh = nullptr;
+    ListNode *ot = nullptr;
+
+    int len = size(head);
+    ListNode *curr = head;
+
+    while (len >= k)
+    {
+        int tempK = k;
+        while (tempK-- > 0)
+        {
+            ListNode *forw = curr->next;
+            curr->next = nullptr;
+            addFirstNode(curr);
+            curr = forw;
+        }
+
+        if (oh == nullptr)
+        {
+            oh = th;
+            ot = tt;
+        }
+        else
+        {
+            ot->next = th;
+            ot = tt;
+        }
+
+        th = nullptr;
+        tt = nullptr;
+        len -= k;
+    }
+
+    ot->next = curr;
+    return oh;
+}
+
