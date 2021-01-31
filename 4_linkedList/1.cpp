@@ -379,3 +379,32 @@ ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
     tail -> next = nullptr;
     return ans;
 }
+
+//19
+ListNode* removeNthFromEnd(ListNode* head, int n) {
+    ListNode *c1 = head, *c2 = head;
+    
+    while(n--)
+        c2 = c2 -> next;
+    
+    //removing sizeTH node from end i.e 1st from start
+    if(c2 == nullptr){
+        head = c1 -> next;
+        c1 -> next = nullptr;
+        delete c1;
+        return head;
+    }
+    
+    while(c2 -> next != nullptr){
+        c2 = c2 -> next;
+        c1 = c1 -> next;
+    }
+    
+    ListNode *removed = c1 -> next;
+    c1 -> next = removed -> next;
+    removed -> next = nullptr;
+    delete removed;
+    
+    return head;    
+}
+
