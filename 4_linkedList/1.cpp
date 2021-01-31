@@ -341,3 +341,41 @@ ListNode *detectCycle(ListNode *head) {
             << ") (c = " << count - cycleLen * rotation << ")";
     return slow;
 }
+
+//160
+ListNode *detectCycle(ListNode *head) {
+    //not possible here
+    // if(head == nullptr || head -> next == nullptr)
+    //     return nullptr;
+    
+    ListNode *slow = head, *fast = head;
+    while(fast != nullptr && fast -> next != nullptr){
+        slow = slow -> next;
+        fast = fast -> next -> next;
+        
+        if(fast == slow)
+            break;
+    }
+    
+    if(fast != slow)
+        return nullptr;
+    
+    slow = head;
+    while(fast != slow){
+        fast = fast -> next;
+        slow = slow -> next;
+    }
+    return slow;
+}
+ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+    if(headA == nullptr || headB == nullptr) return nullptr;
+    
+    ListNode *tail = headA;
+    while(tail -> next != nullptr) 
+        tail = tail -> next;
+    
+    tail -> next = headB;
+    ListNode *ans = detectCycle(headA);
+    tail -> next = nullptr;
+    return ans;
+}
