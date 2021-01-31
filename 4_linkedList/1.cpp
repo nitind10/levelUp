@@ -291,3 +291,53 @@ ListNode* mergeKLists(vector<ListNode*>& lists) {
     return recMerge(lists, 0, n-1);
 }
 
+//141
+bool hasCycle(ListNode *head) {
+    if(head == nullptr || head -> next == nullptr)
+        return false;
+    ListNode *slow = head, *fast = head;
+    
+    while(fast != nullptr && fast -> next != nullptr){
+        fast = fast -> next -> next;
+        slow = slow -> next;
+        
+        if(fast == slow)
+            return true;
+    }
+    return false;
+}
+
+//142
+ListNode *detectCycle(ListNode *head) {
+    if(head == nullptr || head -> next == nullptr)
+        return nullptr;
+    ListNode *slow = head, *fast = head;
+    while(fast != nullptr && fast -> next != nullptr){
+        slow = slow -> next;
+        fast = fast -> next -> next;
+        
+        if(fast == slow)
+            break;
+    }
+    
+    if(fast != slow)
+        return nullptr;
+    
+    int count = 0, cycleLen, rotation = 0;
+    ListNode *temp = fast;
+    
+    slow = head;
+    while(fast != slow){
+        fast = fast -> next;
+        slow = slow -> next;
+        count++;
+        if(fast == temp){
+            rotation++;
+            cycleLen = count/rotation;
+        }
+    }
+    cout << "In terms of edge length : \n";
+    cout << "(a = " << count << ") (m - 1 = " << rotation << ") (b + c = " << cycleLen 
+            << ") (c = " << count - cycleLen * rotation << ")";
+    return slow;
+}
