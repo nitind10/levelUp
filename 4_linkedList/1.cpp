@@ -589,3 +589,38 @@ ListNode* reverseBetween(ListNode* head, int m, int n) {
     
     return head;
 }
+
+//138
+void addNodesInBetween(Node *head){
+    Node *curr = head, *forw = head;
+    while(curr != nullptr){
+        forw = curr -> next;
+        Node *node = new Node(curr -> val);
+        curr -> next = node;
+        node -> next = forw;
+        curr = forw;
+    }
+}
+void assignRandomPointers(Node *head){
+    Node *curr = head;
+    while(curr != nullptr){
+        curr -> next -> random = (curr -> random != nullptr) ? curr -> random -> next : nullptr;
+        curr = curr -> next -> next;
+    }
+}
+Node* breakList(Node *head){
+    Node *curr = head, *forw = head;
+    Node *ans = head -> next;
+    while(curr -> next != nullptr){
+        forw = curr -> next;
+        curr -> next = forw -> next;
+        curr = forw;
+    }
+    return ans;
+}
+Node* copyRandomList(Node* head) {
+    if(head == nullptr) return head;
+    addNodesInBetween(head);
+    assignRandomPointers(head);
+    return breakList(head);
+}
