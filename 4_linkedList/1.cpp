@@ -517,3 +517,75 @@ ListNode *reverseKGroup(ListNode *head, int k)
     return oh;
 }
 
+//92
+//- my approach
+ListNode* reverseBetween(ListNode* head, int m, int n) {
+    if(m == n)
+        return head;
+    
+    int diff = n - m + 1;
+    int mCopy = m;
+    
+    ListNode *curr = head, *prev = nullptr;
+    
+    while(mCopy-- > 1){
+        prev = curr;
+        curr = curr -> next;
+    }
+    
+    ListNode *heldHead = prev, *revStart = curr, *forw = curr;
+    
+    while(diff--){
+        forw = forw -> next;
+        curr -> next = prev;
+        prev = curr;
+        curr = forw;
+    }
+    
+    if(m != 1)
+        heldHead -> next = prev;
+    
+    revStart -> next = forw;
+    
+    if(m == 1) head = prev;
+    
+    return head;
+}
+//- sir's approach
+//making them global or creating in main then passing by refference to addFirstNode, same thing
+ListNode *tempHead = nullptr, *tempTail = nullptr;
+
+void addFirstNode(ListNode *node){
+    if(tempHead == nullptr)
+        tempHead = tempTail = node;
+    else{
+        node -> next = tempHead;
+        tempHead = node;
+    }
+}
+
+ListNode* reverseBetween(ListNode* head, int m, int n) {
+    if(m == n)
+        return head;
+    int idx = 1;
+    ListNode *curr = head, *prev = nullptr, *forw = nullptr;
+    
+    while(idx <= n){
+        if(idx < m){
+            prev = curr;
+            curr = curr -> next;
+        }else{
+            forw = curr -> next;
+            curr -> next = nullptr;
+            addFirstNode(curr);
+            curr = forw;
+        }
+        idx++;
+    }
+    tempTail -> next = forw;
+    
+    if(prev != nullptr) prev -> next = tempHead;
+    else head = tempHead;
+    
+    return head;
+}
