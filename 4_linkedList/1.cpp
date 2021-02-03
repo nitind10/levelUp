@@ -624,3 +624,65 @@ Node* copyRandomList(Node* head) {
     assignRandomPointers(head);
     return breakList(head);
 }
+
+//https://practice.geeksforgeeks.org/problems/segregate-even-and-odd-nodes-in-a-linked-list/0#
+class Node{
+            public:
+                int data = 0;
+                Node *next = nullptr;
+
+                Node(int data){
+                    this -> data = data;
+                }
+        };
+void print(Node *head){
+    while(head != nullptr){
+        cout << head -> data << " ";
+        head = head -> next;
+    }
+    cout << endl;
+}
+int mainfn()
+ {
+	//code
+	int t;
+	cin >> t;
+	while(t--){
+	    int n;
+	    cin >> n;
+	    Node *head = nullptr, *tail = nullptr;
+	    int val;
+	    while(n--){
+	        cin >> val;
+	        Node *node = new Node(val);
+	        if(head == nullptr){
+	            head = node;
+	            tail = head;
+	        }else{
+	            tail -> next = node;
+	            tail = tail -> next;
+	        }
+	    }
+	
+	    Node *dummyOdd = new Node(-1);
+	    Node *dummyEven = new Node(-2);
+	    Node *currOdd = dummyOdd, *currEven = dummyEven;
+	    Node *curr = head;
+	    while(curr != nullptr){
+	        if(curr -> data & 1){
+	            currOdd -> next = curr;
+	            currOdd = curr;
+	        }else{
+	            currEven -> next = curr;
+	            currEven = curr;
+	        }
+	        curr = curr -> next;
+	    }
+	    currOdd -> next = nullptr;
+	    currEven -> next = dummyOdd -> next;
+	    
+	    head = dummyEven -> next;
+	    print(head);
+	}
+	return 0;
+}
