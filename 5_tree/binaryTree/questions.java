@@ -34,7 +34,7 @@ public class binaryTree {
         return find(node.left, data) || find(node.right, data);
     }
 
-    // ========================================================================================================
+    // node to root path ========================================================================================================
     //arraylist passed as parameter, return type boolean
     public boolean nodeToRootPath(TreeNode node, int data, ArrayList<TreeNode> ans){
         if(node == null)
@@ -71,9 +71,8 @@ public class binaryTree {
         }
         return new ArrayList<>();
     }
-    // =========================================================================================
 
-    //236
+    //236 ===============================================================================================================
     public boolean nodeToRootPath(TreeNode node, int data, ArrayList<TreeNode> ans){
         if(node == null)
             return false;
