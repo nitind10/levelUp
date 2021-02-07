@@ -131,5 +131,33 @@ vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
     return ans;
 }
 
+//https://practice.geeksforgeeks.org/problems/maximum-path-sum/1#   ==========================================================
+pair<int,int> maxSumLeafToLeaf(Node *node){
+        if(node == nullptr)
+            return {INT_MIN, INT_MIN};
+        if(node -> left == nullptr && node -> right == nullptr)
+            return {INT_MIN, node -> data};
+            
+        pair<int,int> leftAns = maxSumLeafToLeaf(node -> left);
+        pair<int,int> rightAns = maxSumLeafToLeaf(node -> right);
+        
+        int leftNodeToRoot = leftAns.second;
+        int rightNodeToRoot = rightAns.second;
+        
+        int pathCrossingMe;
+        if(node -> left != nullptr && node -> right != nullptr)
+            pathCrossingMe = leftNodeToRoot + rightNodeToRoot + node -> data;
+        else
+            pathCrossingMe = node -> left == nullptr ? rightAns.first : leftAns.first;
+            
+        return { max(max(leftAns.first, rightAns.first), pathCrossingMe),  max(leftNodeToRoot, rightNodeToRoot) + node -> data };
+    }
+int maxPathSum(Node* root)
+{ 
+    // code here
+    return maxSumLeafToLeaf(root).first;
+}
+
+
 
 
