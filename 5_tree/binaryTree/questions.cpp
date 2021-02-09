@@ -214,6 +214,36 @@ bool isValidBST(TreeNode* root) {
     return checkBST(root).first;
 }
 
+//99 =====================================================================
+TreeNode *prev = nullptr, *a = nullptr, *b = nullptr;
+bool findFaulty(TreeNode *node){
+    if(node == nullptr)
+        return true;
+    if(!findFaulty(node -> left))
+        return false;
+    
+    if(prev != nullptr && prev -> val > node -> val){
+        b = node;
+        //first mistake found
+        if(a == nullptr)
+            a = prev;
+        //second mistake found, a and b are at correct position
+        //therefore return false and reach to root quickly by not traversing nodes ahead
+        else
+            return false;
+    }
+    //updating prev
+    prev = node;
+    
+    if(!findFaulty(node -> right))
+        return false;
+    
+    return true;
+}
+void recoverTree(TreeNode* root) {
+    findFaulty(root);
+    swap(a -> val, b -> val);
+}
 
 
 
