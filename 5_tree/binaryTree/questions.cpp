@@ -189,5 +189,31 @@ int maxPathSum(TreeNode* root) {
     return maxPathSumHelper(root).first;
 }
 
+//98 =======================================================================================
+// pair = {isBstOrNot, {min of tree, max of tree}}
+
+pair<bool, pair<long, long>> checkBST(TreeNode* node){
+    if(node == nullptr)
+        return {true, {1e13, -1e13}};
+    
+    pair<bool, pair<long, long>> left = checkBST(node -> left);
+    pair<bool, pair<long, long>> right = checkBST(node -> right);
+
+    pair<bool, pair<int, int>> ans;
+    ans.first = false;
+    if(left.first && right.first && node -> val > left.second.second && node -> val < right.second.first)
+        ans.first = true;
+    
+    long data = node -> val;
+    ans.second.first = min(left.second.first, data);
+    ans.second.second = max(right.second.second, data);
+    
+    return ans;
+}
+bool isValidBST(TreeNode* root) {
+    return checkBST(root).first;
+}
+
+
 
 
