@@ -158,6 +158,36 @@ int maxPathSum(Node* root)
     return maxSumLeafToLeaf(root).first;
 }
 
+//124 =========================================================================
+//pair [maxPathSum, fromMeToAnyNodeMaxSumPath]
+pair<int,int> maxPathSumHelper(TreeNode *node){
+    if(node == nullptr)
+        return {-1e9, -1e9};
+    if(node -> left == nullptr && node -> right == nullptr)
+        return {node -> val, node -> val};
+    
+    pair<int,int> leftAns = maxPathSumHelper(node -> left);
+    pair<int,int> rightAns = maxPathSumHelper(node -> right);
+    
+    // max of left and right call
+    int maxLR = max(leftAns.first, rightAns.first);
+    //maxDistFromLeftNodeToAnyNode
+    int leftToAnyNode = leftAns.second;
+    int rightToAnyNode = rightAns.second;
+    
+    //max path which includes root, 3 case, left + root, right + root, left + root + right
+    int maxIncRoot;
+    
+    if(node -> left != nullptr && node -> right != nullptr)
+        maxIncRoot = max(max(leftToAnyNode, rightToAnyNode) + node -> val, leftToAnyNode + rightToAnyNode + node -> val);
+    else
+        maxIncRoot = node -> left == nullptr ? node -> val + rightToAnyNode : leftToAnyNode + node -> val;
+    
+    return { max(max(maxLR, maxIncRoot), node -> val) , max( max(leftToAnyNode, rightToAnyNode) + node -> val , node -> val) }; 
+}
+int maxPathSum(TreeNode* root) {
+    return maxPathSumHelper(root).first;
+}
 
 
 
