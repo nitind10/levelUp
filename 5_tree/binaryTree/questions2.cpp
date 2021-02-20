@@ -299,5 +299,103 @@ vector<int> topView(TreeNode* root){
     return res;
 }
 
+//diagonal traversal ===================================================================================
+void diagonalTraversal(TreeNode* root){
+            //node, its width idx
+    queue<pair<TreeNode*, int>> q;
+    q.push({root, 0});
+    
+                //width idx, all nodes' vals with that width idx: level wise
+    unordered_map<int, vector<int>> map;
+    
+    int minWidthIdx = 1e9, maxWidthIdx = -1e9;
+    
+    while(!q.empty()){
+        pair<TreeNode*, int> rp = q.front();
+        q.pop();
+        
+        map[rp.second].push_back(rp.first -> val);
+        
+        minWidthIdx = min(minWidthIdx, rp.second);
+        maxWidthIdx = max(maxWidthIdx, rp.second);
+        
+        if(rp.first -> left != nullptr) 
+            q.push({rp.first -> left, rp.second - 1});
+        if(rp.first -> right != nullptr) 
+            q.push({rp.first -> right, rp.second});
+    }
+    
+    vector<vector<int>> res;
+    
+    while(minWidthIdx <= maxWidthIdx)
+        res.push_back(map[minWidthIdx++]);
+}
+
+//987 ====================================================================================
+void levelWiseSort(vector<pair<int,int>>& v){
+    int prev = 0, curr = 1;
+    while(curr < v.size()){
+        if(v[curr].second != v[prev].second){
+            sort(v.begin() + prev, v.begin() + curr);
+            prev = curr;
+        }
+        curr++;
+    }
+    if(prev != v.size() - 1)
+        sort(v.begin() + prev, v.begin() + curr); 
+}
+
+vector<vector<int>> verticalLevelTraversal(TreeNode* root){
+            //node, its width idx
+    queue<pair<TreeNode*, int>> q;
+    q.push({root, 0});
+
+                //width idx, node's val and its level
+    unordered_map<int, vector<pair<int,int>>> map;
+
+    int minWidthIdx = 1e9, maxWidthIdx = -1e9;
+    int level = 0;
+
+    while(!q.empty()){
+        int size_ = q.size();
+        while(size_--){
+            pair<TreeNode*, int> rp = q.front();
+            q.pop();
+
+            map[rp.second].push_back({rp.first -> val, level});
+
+            minWidthIdx = min(minWidthIdx, rp.second);
+            maxWidthIdx = max(maxWidthIdx, rp.second);
+
+            if(rp.first -> left != nullptr) 
+                q.push({rp.first -> left, rp.second - 1});
+            if(rp.first -> right != nullptr) 
+                q.push({rp.first -> right, rp.second + 1});
+            }
+        level++;
+    }
+
+    vector<vector<pair<int,int>>> res;
+        
+    while(minWidthIdx <= maxWidthIdx)
+        res.push_back(map[minWidthIdx++]);
+        
+    //doing level wise sorting
+    for(int i = 0; i < res.size(); ++i){
+        levelWiseSort(res[i]);
+    }
+        
+    //creating final answer
+    vector<vector<int>> ans(res.size());
+    for(int i = 0; i < res.size(); ++i){
+        for(auto x : res[i])
+            ans[i].push_back(x.first);
+    }
+        
+    return ans;
+}
+vector<vector<int>> verticalTraversal(TreeNode* root) {
+    return verticalLevelTraversal(root);
+}
 
 
