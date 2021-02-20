@@ -180,4 +180,22 @@ void topView(TreeNode* root){
         res.push_back(map[minWidthIdx++]);
 }
 
+//width of tree ==============================================================
+void width(TreeNode* root, int widthIdx, pair<int,int> &minMax){
+    if(root == nullptr)
+        return;
+    
+    minMax.first = min(minMax.first, widthIdx);
+    minMax.second = max(minMax.second, widthIdx);
+    
+    width(root -> left, widthIdx - 1, minMax);
+    width(root -> right, widthIdx + 1, minMax);
+}
+void widthMain(TreeNode* root) {
+    //pair = min widthIdx, max widthIdx
+    pair<int,int> minMax = {1e9, -1e9};
+    width(root, 0, minMax);
+    cout << minMax.first << " " << minMax.second;
+}
+
 
