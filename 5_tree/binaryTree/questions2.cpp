@@ -148,8 +148,8 @@ vector<int> rightSideView(TreeNode* root) {
     return ans;
 }
 
-//top view of tree ==============================================================================
-void topView(TreeNode* root){
+//vertical level of tree ==============================================================================
+void verticalLevelTraversal(TreeNode* root){
             //node, its width idx
     queue<pair<TreeNode*, int>> q;
     q.push({root, 0});
@@ -191,11 +191,113 @@ void width(TreeNode* root, int widthIdx, pair<int,int> &minMax){
     width(root -> left, widthIdx - 1, minMax);
     width(root -> right, widthIdx + 1, minMax);
 }
-void widthMain(TreeNode* root) {
-    //pair = min widthIdx, max widthIdx
+
+//vertical sum ======================================================================
+void width(TreeNode* root, int widthIdx, pair<int,int> &minMax){
+    if(root == nullptr)
+        return;
+
+    minMax.first = min(minMax.first, widthIdx);
+    minMax.second = max(minMax.second, widthIdx);
+
+    width(root -> left, widthIdx - 1, minMax);
+    width(root -> right, widthIdx + 1, minMax);
+}
+vector<int> verticalSum(TreeNode* root){   
     pair<int,int> minMax = {1e9, -1e9};
     width(root, 0, minMax);
-    cout << minMax.first << " " << minMax.second;
+    int wid = minMax.second - minMax.first + 1;
+    vector<int> res(wid); 
+        
+            //node, its width idx
+    queue<pair<TreeNode*, int>> q;
+    q.push({root, -minMax.first});
+
+    while(!q.empty()){
+        pair<TreeNode*, int> rp = q.front();
+        q.pop();
+        
+        res[rp.second] += rp.first -> val;
+        
+        if(rp.first -> left != nullptr) 
+            q.push({rp.first -> left, rp.second - 1});
+        if(rp.first -> right != nullptr) 
+            q.push({rp.first -> right, rp.second + 1});
+    }
+    return res;
 }
+
+//bottom view ==============================================================
+void width(TreeNode* root, int widthIdx, pair<int,int> &minMax){
+    if(root == nullptr)
+        return;
+
+    minMax.first = min(minMax.first, widthIdx);
+    minMax.second = max(minMax.second, widthIdx);
+
+    width(root -> left, widthIdx - 1, minMax);
+    width(root -> right, widthIdx + 1, minMax);
+}
+vector<int> bottomView(TreeNode* root){   
+    pair<int,int> minMax = {1e9, -1e9};
+    width(root, 0, minMax);
+    int wid = minMax.second - minMax.first + 1;
+    vector<int> res(wid); 
+        
+            //node, its width idx
+    queue<pair<TreeNode*, int>> q;
+    q.push({root, -minMax.first});
+
+    while(!q.empty()){
+        pair<TreeNode*, int> rp = q.front();
+        q.pop();
+        
+        res[rp.second] = rp.first -> val;
+        
+        if(rp.first -> left != nullptr) 
+            q.push({rp.first -> left, rp.second - 1});
+        if(rp.first -> right != nullptr) 
+            q.push({rp.first -> right, rp.second + 1});
+    }
+    return res;
+}
+
+//top view ===================================================================
+void width(TreeNode* root, int widthIdx, pair<int,int> &minMax){
+    if(root == nullptr)
+        return;
+
+    minMax.first = min(minMax.first, widthIdx);
+    minMax.second = max(minMax.second, widthIdx);
+
+    width(root -> left, widthIdx - 1, minMax);
+    width(root -> right, widthIdx + 1, minMax);
+}
+vector<int> topView(TreeNode* root){   
+    pair<int,int> minMax = {1e9, -1e9};
+    width(root, 0, minMax);
+    int wid = minMax.second - minMax.first + 1;
+    vector<int> res(wid, -1e9); 
+        
+            //node, its width idx
+    queue<pair<TreeNode*, int>> q;
+    q.push({root, -minMax.first});
+
+    while(!q.empty()){
+        pair<TreeNode*, int> rp = q.front();
+        q.pop();
+        
+        //if -1e9 is in range for node val, keep some bool visited etc
+        if(res[rp.second] == -1e9)
+            res[rp.second] = rp.first -> val;
+        
+        if(rp.first -> left != nullptr) 
+            q.push({rp.first -> left, rp.second - 1});
+        if(rp.first -> right != nullptr) 
+            q.push({rp.first -> right, rp.second + 1});
+    }
+    return res;
+}
+
 
 
