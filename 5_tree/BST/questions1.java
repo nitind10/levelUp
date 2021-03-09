@@ -61,6 +61,60 @@ public class questions1 {
             }
         }
     }
+
+    //173 ===============================================================================================
+
+    /*will be traversed as 
+        while(obj.hasNext())
+            print obj.next(); */
+    class BSTIterator {
+
+        //implemented as a stack using addFirst and removeFirst fns of linked list
+        LinkedList<TreeNode> st = new LinkedList<>();
+         BSTIterator(TreeNode root) {
+             addAllLeft(root);
+         }
+         
+         void addAllLeft(TreeNode node){
+             if(node == null)
+                 return;
+             
+             TreeNode temp = node; 
+             while(temp != null){
+                 st.addFirst(temp);
+                 temp = temp.left;
+             }
+         }
+         int next() {
+             TreeNode rn = st.removeFirst();
+             addAllLeft(rn.right);
+             return rn.val;
+         }
+         
+         boolean hasNext() {
+             return st.size() > 0;
+         }
+     }
+
+     //510 ======================================================================================
+     //here Node has a pointer pointing to its parent also
+    public static Node inorderSuccessorII(Node node){
+        if(node.right != null){
+            node = node.right;
+            while(node.left != null)
+                node = node.left;
+            return node;
+        }
+        else{
+            while(node != null){
+                if(node.parent != null && node.parent.left == node)
+                    return node.parent;
+                node = node.parent;
+            }
+            return null;
+        }
+     }
+
     public static void main(String[] args){
 
     }
