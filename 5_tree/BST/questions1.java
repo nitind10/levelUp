@@ -86,9 +86,12 @@ public class questions1 {
              }
          }
          int next() {
-             TreeNode rn = st.removeFirst();
-             addAllLeft(rn.right);
-             return rn.val;
+            TreeNode rn = new TreeNode((int)-1e9);
+            if(hasNext()){
+                rn = st.removeFirst();
+                addAllLeft(rn.right);
+            }
+            return rn.val;
          }
          
          boolean hasNext() {
@@ -115,6 +118,84 @@ public class questions1 {
         }
      }
 
+     //105 =========================================================================================
+     int idx = 0;
+    public int findIdx(int[] inorder, int data, int si, int ei){
+        for(int i = si; i <= ei; ++i){
+            if(inorder[i] == data)
+                return i;
+        }
+        //wont reach here
+        return -1;
+    }
+    
+    public void buildTree(TreeNode node, int[] preorder, int[] inorder, int si, int ei){
+        if(si > ei)
+            return;
+        
+        int pos = findIdx(inorder, node.val, si, ei);
+        if( pos > si){
+            node.left = new TreeNode(preorder[++idx]);
+            buildTree(node.left, preorder, inorder, si, pos - 1);
+        }
+        if(pos < ei){
+            node.right = new TreeNode(preorder[++idx]);
+            buildTree(node.right, preorder, inorder, pos + 1, ei);
+        }
+    }
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        TreeNode root = new TreeNode(preorder[0]);
+        buildTree(root, preorder, inorder, 0, preorder.length - 1);
+        return root;
+    }
+
+    //106 ===========================================================================================
+    public TreeNode buildInPost(int[] inorder, int isi, int iei, int[] postorder, int psi, int pei){
+        if(psi > pei)
+            return null;
+        
+        int idx = isi;
+        while(inorder[idx] != postorder[pei])
+            idx++;
+        
+        int tnel = idx - isi;
+        
+        TreeNode node = new TreeNode(postorder[pei]);
+        node.left = buildInPost(inorder, isi, idx - 1, postorder, psi, psi + tnel - 1);
+        node.right = buildInPost(inorder, idx + 1, iei, postorder, psi + tnel, pei - 1);
+        
+        return node;
+    }
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        int n = inorder.length;
+        return buildInPost(inorder, 0, n - 1, postorder, 0, n - 1);
+    }
+
+    //889 =================================================================================================
+    public TreeNode PrePost(int[] pre, int psi, int pei, int[] post, int ppsi, int ppei){
+        
+        if(psi > pei)
+            return null;
+        
+        TreeNode node = new TreeNode(pre[psi]);
+        
+        if(psi == pei)
+            return node;
+        
+        int idx = ppsi;
+        while(post[idx] != pre[psi + 1])
+            idx++;
+        int tnel = idx - ppsi + 1;
+        
+        node.left = PrePost(pre, psi + 1, psi + tnel, post, ppsi, idx);
+        node.right = PrePost(pre, psi + tnel + 1, pei, post, idx + 1, ppei - 1);
+        
+        return node;
+    }
+    public TreeNode constructFromPrePost(int[] pre, int[] post) {
+        int n = pre.length;
+        return PrePost(pre, 0, n - 1, post, 0, n - 1);
+    }
     public static void main(String[] args){
 
     }
