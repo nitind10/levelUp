@@ -294,6 +294,31 @@ public class questions1 {
         }
     }
 
+    //serialize and deserialize tree
+    int idx = 0;
+
+    public TreeNode deserializeTree(int[] arr) {
+        if (idx == arr.length || arr[idx] == -1) {
+            idx++;
+            return null;
+        }
+        TreeNode node = new TreeNode(arr[idx++]);
+        node.left = createTree(arr);
+        node.right = createTree(arr);
+
+        return node;
+    }
+
+    public void serializeTree(TreeNode node, ArrayList<Integer> arr) {
+        if (node == null) {
+            arr.add(-1);
+            return;
+        }
+
+        arr.add(node.val);
+        serializeTree(node.left, arr);
+        serializeTree(node.right, arr);
+    }
 
 
 
