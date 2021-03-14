@@ -240,7 +240,7 @@ public class questions1 {
     public void flatten(TreeNode root) {
         flat(root);
     }
-    
+
 
     //O(N) sol
     public TreeNode flat(TreeNode root){
@@ -265,6 +265,34 @@ public class questions1 {
         flat(root);
     }
 
+
+    //426 locked / https://practice.geeksforgeeks.org/problems/binary-tree-to-dll/1#
+    class Solution
+    {   Node dummy = new Node(-1);
+        Node prev = dummy;
+    
+        void convert(Node root){
+            if(root == null)
+                return;
+            convert(root.left);
+            
+            prev.right = root;
+            root.left = prev;
+            prev = root;
+            
+            convert(root.right);
+        }
+        
+        Node bToDLL(Node root)
+        {
+        //  Your code here	
+            convert(root);
+            Node head = dummy.right;
+            head.left = null;
+            dummy.right = null;
+            return head;
+        }
+    }
 
 
 
