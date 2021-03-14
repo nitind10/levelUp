@@ -196,6 +196,79 @@ public class questions1 {
         int n = pre.length;
         return PrePost(pre, 0, n - 1, post, 0, n - 1);
     }
+
+    //114 ============================================================================================================
+    //O(N^2) sol : sub work can be done iterativelty too
+    public class pair{
+        TreeNode head = null;
+        TreeNode lastPre = null;
+        pair(TreeNode head, TreeNode lastPre){
+            this.head = head;
+            this.lastPre = lastPre;
+        }
+    }
+    public void recPreOrder(TreeNode root, TreeNode[] arr){
+        if(root == null)
+            return;
+        arr[0] = root;
+        recPreOrder(root.left, arr);
+        recPreOrder(root.right, arr);
+    }
+    public pair flat(TreeNode root){
+        if(root == null)
+            return new pair(null, null);
+        if(root.left == null && root.right == null)
+            return new pair(root, root);
+        
+        pair leftans = flat(root.left);
+        pair rightans = flat(root.right);
+        
+        if((leftans.head != null && rightans.head != null) || (rightans.head == null)){
+            root.right = leftans.head;
+            leftans.lastPre.right = rightans.head;
+        }
+        if(leftans.head == null){
+            root.right = rightans.head;
+        }
+        root.left = null;
+        
+        TreeNode[] arr = new TreeNode[1];
+        arr[0] = null;
+        recPreOrder(root, arr);
+        return new pair(root, arr[0]);
+    }
+    public void flatten(TreeNode root) {
+        flat(root);
+    }
+    
+
+    //O(N) sol
+    public TreeNode flat(TreeNode root){
+        if(root == null)
+            return null;
+         
+        TreeNode leftTail = flat(root.left);
+        TreeNode rightTail =  flat(root.right);
+        
+        if(leftTail != null){
+            leftTail.right = root.right;
+            root.right = root.left;
+            root.left = null;
+        }
+         
+        if(leftTail == null && rightTail == null)
+            return root;
+         
+         return rightTail != null ? rightTail : leftTail;
+     }
+    public void flatten(TreeNode root) {
+        flat(root);
+    }
+
+
+
+
+
     public static void main(String[] args){
 
     }
