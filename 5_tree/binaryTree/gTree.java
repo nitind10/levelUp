@@ -160,6 +160,48 @@ public class gTree {
         return time;
     }
 
+    //line wise level order =============================================================================
+    public static void lineWiseLevelOrder(Node root) {
+        LinkedList<Node> que = new LinkedList<>();
+        que.addLast(root);
+        int level = 0;
+
+        while (que.size() != 0) {
+            int sz = que.size();
+            System.out.print("Level : " + level + " -> ");
+            while (sz-- > 0) {
+                Node rn = que.removeFirst();
+                System.out.print(rn.val + ", ");
+
+                for (Node child : rn.childs) {
+                    que.addLast(child);
+                }
+
+            }
+
+            level++;
+            System.out.println();
+        }
+    }
+
+    //mirror trees ===========================================================================
+    public static boolean isMirror(Node node1, Node node2) {
+        if (node1.childs.size() != node2.childs.size())
+            return false;
+        if (node1.val != node2.val)
+            return false;
+
+        for (int i = 0, j = node1.childs.size() - 1; j >= 0; i++, j--) {
+            Node child1 = node1.childs.get(i);
+            Node child2 = node2.childs.get(j);
+            if (!isMirror(child1, child2))
+                return false;
+        }
+
+        return true;
+
+    }
+
 
     public static void main(String[] args){
 
