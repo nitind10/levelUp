@@ -69,7 +69,54 @@ public class questions4 {
         return Math.max(ans[0], ans[1]);
     }
 
-    
+    //230 ==========================================================================
+    //do using bst iterator in logN space and morris in constant space for more geniune way
+    public void helper(TreeNode node, int k, int[] K){
+        if(node == null)
+            return;
+        
+        helper(node.left, k, K);
+        
+        K[0]++;
+        if(K[0] == k)
+            K[1] = node.val;
+        
+        helper(node.right, k, K);
+        
+    }
+    public int kthSmallest(TreeNode root, int k) {
+        int[] K = new int[2];
+        K[0] = 0;
+        helper(root, k, K);
+        return K[1];
+    }
+
+    //1372 =================================================================================
+    //arr[0] = left oriented max path
+    //arr[1] = right oriented max path
+    public int[] helper(TreeNode node, int[] path){
+        if(node == null){
+            int[] base = new int[2];
+            base[0] = -1; base[1] = -1;
+            return base;
+        }
+        
+        int[] lAns = helper(node.left, path);
+        int[] rAns = helper(node.right, path);
+        
+        int[] myAns = new int[2];
+        myAns[0] = lAns[1] + 1;
+        myAns[1] = rAns[0] + 1;
+        
+        path[0] = Math.max(path[0], Math.max(myAns[0], myAns[1]));
+        return myAns;
+    }
+    public int longestZigZag(TreeNode root) {
+        int[] path = new int[1];
+        path[0] = -(int)1e9;
+        int[] ans = helper(root, path);
+        return path[0];
+    }
 
     public static void main(String[] args){
 
