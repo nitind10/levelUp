@@ -118,6 +118,43 @@ public class questions4 {
         return path[0];
     }
 
+    //653 =============================================================================================
+    public void insertAllRight(TreeNode node, LinkedList<TreeNode> st){
+        while(node != null){
+            st.addFirst(node);
+            node = node.right;
+        }
+    }
+    public void insertAllLeft(TreeNode node, LinkedList<TreeNode> st){
+        while(node != null){
+            st.addFirst(node);
+            node = node.left;
+        }
+    }
+    public boolean findTarget(TreeNode root, int k) {
+    
+        LinkedList<TreeNode> s1 = new LinkedList<>();
+        LinkedList<TreeNode> s2 = new LinkedList<>();
+        
+        insertAllLeft(root, s1);
+        insertAllRight(root, s2);
+        
+        while(s1.getFirst().val < s2.getFirst().val){
+            int res = s1.getFirst().val + s2.getFirst().val;
+            if(res == k)
+                return true;
+            else if(res > k){
+                TreeNode rn = s2.removeFirst();
+                insertAllRight(rn.left, s2);
+            }
+            else{
+                TreeNode rn = s1.removeFirst();
+                insertAllLeft(rn.right, s1);
+            }
+        }
+        return false;
+    }
+
     public static void main(String[] args){
 
     }
