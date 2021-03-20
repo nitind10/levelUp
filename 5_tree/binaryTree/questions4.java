@@ -155,6 +155,77 @@ public class questions4 {
         return false;
     }
 
+    //437 ================================================================================
+    int ans = 0;
+    public void pathSumIII(TreeNode node, HashMap<Integer, Integer> map, int tar, int prefixSum) {
+        if (node == null)
+            return;
+
+        prefixSum += node.val;
+        ans += map.getOrDefault(prefixSum - tar, 0);
+
+        map.put(prefixSum, map.getOrDefault(prefixSum, 0) + 1);
+
+        pathSumIII(node.left, map, tar, prefixSum);
+        pathSumIII(node.right, map, tar, prefixSum);
+
+        map.put(prefixSum, map.get(prefixSum) - 1);
+        if (map.get(prefixSum) == 0)
+            map.remove(prefixSum);
+    }
+
+    public int pathSum(TreeNode root, int K) {
+        // prefix sum , Frequency
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        pathSumIII(root, map, K, 0);
+        return ans;
+    }
+
+    //662 ===========================================================================================
+    public class pair {
+        TreeNode node = null;
+        long w = 0;
+
+        pair(TreeNode node, long w) {
+            this.node = node;
+            this.w = w;
+        }
+    }
+
+    public int widthOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        LinkedList<pair> que = new LinkedList<>();
+        que.addLast(new pair(root, 1));
+        int ans = 0;
+
+        while (que.size() != 0) {
+            int size = que.size();
+            long fi = que.getFirst().w;
+            long li = que.getFirst().w;
+
+            while (size-- > 0) {
+                pair p = que.removeFirst();
+
+                TreeNode node = p.node;
+                long w = p.w;
+                li = w;
+
+                if (node.left != null)
+                    que.addLast(new pair(node.left, 2 * w));
+                if (node.right != null)
+                    que.addLast(new pair(node.right, 2 * w + 1));
+
+            }
+
+            ans = Math.max(ans, (int) (li - fi + 1));
+        }
+
+        return ans;
+    }
+
     public static void main(String[] args){
 
     }
