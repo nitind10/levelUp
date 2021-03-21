@@ -35,14 +35,21 @@ void display(){
 }
 
 void removeEdge(int u, int v){
-    for(int i = 0; i < graph[u].size(); ++i){
+    for(int i = 0; i < graph[u].size(); ++i)
         if(graph[u][i].v == v)
             graph[u].erase(graph[u].begin() + i);
-    }
-    for(int i = 0; i < graph[v].size(); ++i){
+    
+    for(int i = 0; i < graph[v].size(); ++i)
         if(graph[v][i].v == u)
             graph[v].erase(graph[v].begin() + i);
-    }
+}
+
+void removeVtx(int u){
+    vector<int> dest;
+    for(Edge x : graph[u])
+        dest.push_back(x.v);
+    for(int x : dest)
+        removeEdge(u, x);
 }
 
 void constructGraph(){
@@ -60,6 +67,7 @@ int main(){
     constructGraph();
     display();
     removeEdge(4,3);
+    removeVtx(3);
     display();
     return 0;
 }
