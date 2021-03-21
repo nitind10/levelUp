@@ -34,24 +34,34 @@ public class basics{
             System.out.println();
         }
     }
+
+    public static int findEdge(int u, int v){
+        int idx = -1;
     
-    public static void removeEdge(int u, int v){
-        for(int i = 0; i < graph[u].size(); ++i){
-            if(graph[u].get(i).v == v)
-                graph[u].remove(i);
-        }
-        for(int i = 0; i < graph[v].size(); ++i){
-            if(graph[v].get(i).v == u)
-                graph[v].remove(i);
-        }
+        for(int i = 0; i < graph[u].size(); ++i)
+            if(graph[u].get(i).v == v){
+                idx = i;
+                break;
+            }
+        
+        return idx;
+    }
+    
+    public static void removeEdge(int u, int v){ //T(N): O(V + E)
+        int idx1 = findEdge(u, v); //O(V)
+        int idx2 = findEdge(v, u); //O(V)
+
+        if(idx1 != -1)
+            graph[u].remove(idx1); //O(E)
+        if(idx2 != -1)
+        graph[v].remove(idx2); //O(E)
     }
 
     public static void removeVtx(int u){
-        ArrayList<Integer> dest = new ArrayList<>();
-        for(Edge x : graph[u])
-            dest.add(x.v);
-        for(Integer x : dest)
-            removeEdge(u, x);
+        for(int i = graph[u].size() - 1; i > -1; --i){
+            int v = graph[u].get(i).v;
+            removeEdge(u, v);
+        }
     }
     
     public static void constructGraph(){
@@ -70,7 +80,7 @@ public class basics{
     public static void main(String[] args){
         constructGraph();
         display();
-        removeEdge(0,1);
+        //removeEdge(0,1);
         removeVtx(3);
         display();
     }

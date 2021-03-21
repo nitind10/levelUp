@@ -28,28 +28,39 @@ void display(){
 
     for(int i = 0; i < vertices; ++i){
         cout << i << " -> ";
-        for(auto y : graph[i])
-            cout << "(" << y.v << "," << y.w << ") ";
+        for(Edge e : graph[i])
+            cout << "(" << e.v << "," << e.w << ") ";
         cout << endl;
     }
 }
 
-void removeEdge(int u, int v){
+int findEdge(int u, int v){
+    int idx = -1;
+
     for(int i = 0; i < graph[u].size(); ++i)
-        if(graph[u][i].v == v)
-            graph[u].erase(graph[u].begin() + i);
+        if(graph[u][i].v == v){
+            idx = i;
+            break;
+        }
     
-    for(int i = 0; i < graph[v].size(); ++i)
-        if(graph[v][i].v == u)
-            graph[v].erase(graph[v].begin() + i);
+    return idx;
+}
+
+void removeEdge(int u, int v){ //T(N) : O(V + E)
+    int idx1 = findEdge(u, v); //O(V)
+    int idx2 = findEdge(v, u); //O(V)
+
+    if(idx1 != -1)
+        graph[u].erase(graph[u].begin() + idx1); //O(E)
+    if(idx2 != -1)
+    graph[v].erase(graph[v].begin() + idx2); //O(E)
 }
 
 void removeVtx(int u){
-    vector<int> dest;
-    for(Edge x : graph[u])
-        dest.push_back(x.v);
-    for(int x : dest)
-        removeEdge(u, x);
+    for(int i = graph[u].size() - 1; i > -1; --i){
+        int v = graph[u][i].v;
+        removeEdge(u, v);
+    } 
 }
 
 void constructGraph(){
@@ -66,7 +77,7 @@ void constructGraph(){
 int main(){
     constructGraph();
     display();
-    removeEdge(4,3);
+    //removeEdge(4,3);
     removeVtx(3);
     display();
     return 0;
