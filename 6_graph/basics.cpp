@@ -63,6 +63,119 @@ void removeVtx(int u){
     } 
 }
 
+//since we are asked whether any path existes or not => no need to mark false in backtrcking
+bool hasPath(int src, int dest, vector<bool>& visited){
+    if(src == dest)
+        return true;
+
+    visited[src] = true;
+    bool res = false;
+
+    for(Edge e : graph[src])
+        if(!visited[e.v])
+            res = res || hasPath(e.v, dest, visited);
+    
+    return res;
+}
+
+int printAllPaths(int src, int dest, vector<bool>& visited, string psf){
+    if(src == dest){
+        psf = psf + to_string(src) + " ";
+        cout << psf << endl;
+        return 1;
+    }
+
+    psf = psf + to_string(src) + " ";
+    int count = 0;
+
+    visited[src] = true;
+
+    for(Edge e : graph[src])
+        if(!visited[e.v])
+            count += printAllPaths(e.v, dest, visited, psf);
+
+    visited[src] = false;
+    return count;
+}
+
+class heavyPair{
+    public:
+        int weight = 0;
+        string path = "";
+
+        heavyPair(int weight, string path){
+            this -> weight = weight;
+            this -> path = path;
+        }
+};
+heavyPair heavyPath(int src, int dest, vector<bool>& visited){
+    if(src == dest){
+        heavyPair base(0, to_string(dest));
+        return base;
+    }
+
+    visited[src] = true;
+    heavyPair myAns(-1e8, "");
+
+    for(Edge e : graph[src]){
+        if(!visited[e.v]){
+            heavyPair rres = heavyPath(e.v, dest, visited);
+            if(rres.weight != -1e8 && e.w + rres.weight > myAns.weight){
+                myAns.weight = e.w + rres.weight;
+                myAns.path = to_string(src) + " " + rres.path;
+            }
+        }
+    }
+
+    visited[src] = false;
+    return myAns;
+}
+
+int hamiltonialPathAndCycle(int src, int osrc, vector<bool>& visited, string psf, int numOfEdges){
+    if(numOfEdges == N - 1){
+        psf += to_string(src);
+        int idx = findEdge(src, osrc);
+        if(idx != -1)
+            cout << "Cycle : " << psf << endl;
+        else
+            cout << "Path : " << psf << endl;
+        return 1;
+    }
+    
+    int count = 0;
+    psf = psf + to_string(src) + " ";
+
+    visited[src] = true;
+    for(Edge e : graph[src]){
+        if(!visited[e.v]){
+            count += hamiltonialPathAndCycle(e.v, osrc, visited, psf, numOfEdges + 1);
+        }
+    }
+    visited[src] = false;
+
+    return count;
+}
+
+void GCC_(int src, vector<bool>& visited){
+    visited[src] = true;
+    for(Edge e : graph[src]){
+        if(!visited[e.v]){
+            GCC_(e.v, visited);
+        }
+    }
+}
+int GCC(){
+    vector<bool> visited(N, false);
+    int components = 0;
+    for(int i = 0; i < N; ++i){
+        if(!visited[i]){
+            GCC_(i, visited);
+            components++;
+        }
+    }
+    return components;
+}
+
 void constructGraph(){
     addEdge(0, 1, 10);
     addEdge(0, 3, 10);
@@ -72,13 +185,19 @@ void constructGraph(){
     addEdge(4, 5, 2);
     addEdge(4, 6, 8);
     addEdge(5, 6, 3);
+
+    addEdge(6, 0, 10);
 }
 
 int main(){
     constructGraph();
-    display();
+    vector<bool> visited(N, false);
+    // display();
     //removeEdge(4,3);
-    removeVtx(3);
-    display();
+    // removeVtx(3);
+    // display();
+    
+    //cout << hamiltonialPathAndCycle(0, 0, visited, "", 0);
+    cout << GCC();
     return 0;
 }
