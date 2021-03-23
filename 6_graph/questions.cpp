@@ -79,3 +79,50 @@ int islandPerimeter(vector<vector<int>>& grid) {
     }
     return (4 * ones) - (2 * nbrs);
 }
+
+//130 ===================================================================
+void dfs(int sr, int sc, vector<vector<char>>& board, vector<vector<int>>& dir){
+    board[sr][sc] = '@';
+    
+    for(int i = 0; i < dir.size(); ++i){
+        int r = sr + dir[i][0];
+        int c = sc + dir[i][1];
+        
+        if(r > -1 && r < board.size() && c > -1 && c < board[0].size() && board[r][c] == 'O')
+            dfs(r, c, board, dir);
+    }
+}
+void solve(vector<vector<char>>& board) {
+    int r = board.size();
+    int c = board[0].size();
+    
+    vector<vector<int>> dir {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+    
+    for(int i = 0; i < r; ++i){
+        if(board[i][0] == 'O'){
+            dfs(i, 0, board, dir);
+        }
+        if(board[i][c - 1] == 'O'){
+            dfs(i, c - 1, board, dir);
+        }
+    }
+    
+    for(int j = 0; j < c; ++j){
+        if(board[0][j] == 'O'){
+            dfs(0, j, board, dir);
+        }
+        if(board[r - 1][j] == 'O'){
+            dfs(r - 1, j, board, dir);
+        }
+    }
+    
+    for(int i = 0; i < r; ++i){
+        for(int j = 0; j < c; ++j){
+            if(board[i][j] == 'O')
+                board[i][j] = 'X';
+            if(board[i][j] == '@')
+                board[i][j] = 'O';
+        }
+        
+    }
+}
