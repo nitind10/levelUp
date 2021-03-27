@@ -2,6 +2,8 @@
 #include<vector>
 using namespace std;
 
+//DFS ===============================================================
+
 //200 =============================================================================
 vector<vector<int>> dir {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
 
@@ -125,4 +127,106 @@ void solve(vector<vector<char>>& board) {
         }
         
     }
+}
+
+//BFS ============================================================================
+
+//1091 ======================================================================
+int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+    int r = grid.size();
+    int c = r;
+    
+    if(grid[0][0] == 1 || grid[r-1][c-1] == 1)
+        return -1;
+    
+    //src = grid[0][0], in  1d it will be x*c + y , where x = 0, y = 0
+    queue<int> que;
+    que.push(0);
+    grid[0][0] = 1;
+    
+    int level = 1;
+    vector<vector<int>> dir {{-1,0}, {-1,1}, {0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,-1}};
+    
+    while(que.size() != 0){
+        int size = que.size();
+        
+        while(size--){
+            int rv = que.front();
+            que.pop();
+            
+            int x = rv / c;
+            int y = rv % c;
+            
+            if(x == r - 1 && y == c - 1)
+                return level;
+            
+            for(int i = 0; i < dir.size(); ++i){
+                int ri = x + dir[i][0];
+                int ci = y + dir[i][1];
+                
+                if(ri > -1 && ri < r && ci > -1 && ci < c && grid[ri][ci] == 0){
+                    grid[ri][ci] = 1;
+                    int oneDidx = ri * c + ci;
+                    que.push(oneDidx);
+                }
+            }
+            
+        }
+        level++;
+    }
+    return -1;
+}
+
+//785 ===================================================================
+bool helper(int src, vector<int>& visited, vector<vector<int>>& graph){
+    bool isCycle = false;
+
+    int color = 0;
+    
+    //in visited array
+    //-1 : not visited, 0 : red color, 1 : green color
+
+    queue<int> que;
+    que.push(src);
+
+    while(que.size() != 0){
+        int size = que.size();
+
+        while(size--){
+            int rv = que.front();
+            que.pop();
+
+            if(visited[rv] != -1){
+                isCycle = true;
+                
+                if(visited[rv] != color)
+                    return false;
+                
+                continue;
+            }
+
+            visited[rv] = color;
+
+            for(int e : graph[rv]){
+                if(visited[e] == -1)
+                    que.push(e);
+            }
+        }
+        color = (color + 1) % 2;
+    }
+    return true;
+}
+bool isBipartite(vector<vector<int>>& graph) {
+    int N = graph.size();
+    bool res = true;
+    vector<int> visited(N, -1);
+    
+    //given graph can have more than 1 component too, hence do for every part of graph
+    for(int i = 0; i < N; ++i){
+        if(visited[i] == -1){
+            res = res && helper(i, visited, graph);
+        }
+    }
+    
+    return res;
 }
