@@ -78,10 +78,10 @@ public class basics{
         addEdge(5, 6, 3);
     }
     public static void main(String[] args){
-        constructGraph();
-        display();
-        //removeEdge(0,1);
-        removeVtx(3);
-        display();
+        // constructGraph();
+        // display();
+        // //removeEdge(0,1);
+        // removeVtx(3);
+        // display();
     }
 }

@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<queue>
 
 using namespace std;
 
@@ -14,7 +15,7 @@ class Edge{
         }
 };
 
-const int N = 7;
+const int N = 9;
 vector<vector<Edge>> graph(N);
 
 void addEdge(int u, int v, int w){
@@ -62,6 +63,8 @@ void removeVtx(int u){
         removeEdge(u, v);
     } 
 }
+
+//DFS ========================================================================================================
 
 //since we are asked whether any path existes or not => no need to mark false in backtrcking
 bool hasPath(int src, int dest, vector<bool>& visited){
@@ -176,6 +179,143 @@ int GCC(){
     return components;
 }
 
+//BFS ==========================================================================================================
+
+//use this for detecting cycle only,
+//its a bit inefficient i.e pushes extra nodes in queue, but makes things easier for cycle detection
+void BFS_Cycle(int src){
+    int dest = 6;
+    bool isCycle = false;
+
+    int level = 0;
+    int atLevel = -1;
+
+    vector<bool> visited(N, false);
+
+    queue<int> que;
+    que.push(src);
+
+    while(que.size() != 0){
+        int size = que.size();
+        cout << level << " -> ";
+
+        while(size--){
+            int rv = que.front();
+            que.pop();
+
+            if(visited[rv]){
+                isCycle = true;
+                continue;
+            }
+
+            visited[rv] = true;
+            cout << rv << ", ";
+
+            if(rv == dest)
+                atLevel = level;
+
+            for(Edge e : graph[rv]){
+                if(!visited[e.v])
+                    que.push(e.v);
+            }
+        }
+        level++;
+        cout << endl;
+    }
+
+    cout << dest << " present at edge distance : " << atLevel << endl;
+    cout << "isCycle : " << boolalpha << isCycle << endl;
+}
+
+//most optmized bfs, every node is pushed only once, use for shortest path
+//can be used for cycle detection(putting else if condition in for loop, but a bit complex, as we'll need a parent array too), so avoid
+void BFS_shortestPath(int src, vector<bool>& visited){
+    int level = 0;
+    int atLevel = -1;
+    int dest = 6;
+
+    queue<int> que;
+    que.push(src);
+
+    //imp
+    visited[src] = true;
+
+    while(que.size() != 0){
+        int size = que.size();
+
+        while(size--){
+            int rv = que.front();
+            que.pop();
+
+            if(rv == dest)
+                atLevel = level;
+
+            for(Edge e : graph[rv]){
+                if(!visited[e.v]){
+                    visited[e.v] = true;
+                    que.push(e.v);
+                }
+            }
+        }
+        level++;
+    }
+
+    cout << "Shortest path for " << dest << " is : " << atLevel << endl;
+}
+
+void BFS_printShortestPath(int src, int dest, vector<bool>& visited){
+    int level = 0;
+    int atLevel = -1;
+    vector<int> par(N, -1);
+
+    queue<int> que;
+    que.push(src);
+
+    //imp
+    visited[src] = true;
+
+    while(que.size() != 0){
+        int size = que.size();
+
+        while(size--){
+            int rv = que.front();
+            que.pop();
+
+            if(rv == dest)
+                atLevel = level;
+
+            for(Edge e : graph[rv]){
+                if(!visited[e.v]){
+                    visited[e.v] = true;
+                    que.push(e.v);
+                    par[e.v] = rv;
+                }
+            }
+        }
+        level++;
+    }
+
+    cout << "Shortest path for " << dest << " is : ";
+    int idx = dest;
+    while(idx != -1){
+        cout << idx << " -> ";
+        idx = par[idx];
+    }
+}
+
+void BFS_GCC(){
+    int components = 0;
+    vector<bool> visited(N, false);
+
+    for(int i = 0; i < N; ++i){
+        if(!visited[i]){
+            BFS_shortestPath(i, visited);
+            components++;
+        }
+    }
+    cout << "Totoal components in the graph are : " << components << endl;
+}
+
 void constructGraph(){
     addEdge(0, 1, 10);
     addEdge(0, 3, 10);
@@ -186,18 +326,17 @@ void constructGraph(){
     addEdge(4, 6, 8);
     addEdge(5, 6, 3);
 
-    addEdge(6, 0, 10);
+    //addEdge(6, 0, 10);
+    addEdge(2, 8, 3);
+    addEdge(2, 7, 1);
 }
 
 int main(){
     constructGraph();
     vector<bool> visited(N, false);
-    // display();
-    //removeEdge(4,3);
-    // removeVtx(3);
-    // display();
-    
-    //cout << hamiltonialPathAndCycle(0, 0, visited, "", 0);
-    cout << GCC();
+    //BFS_Cycle(0);
+    //BFS_shortestPath(0, visited);
+    //BFS_printShortestPath(0, 8, visited);
+    BFS_GCC();
     return 0;
 }
