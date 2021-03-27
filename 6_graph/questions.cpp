@@ -230,3 +230,58 @@ bool isBipartite(vector<vector<int>>& graph) {
     
     return res;
 }
+
+//994 =======================================================
+int orangesRotting(vector<vector<int>>& grid) {
+    int r = grid.size();
+    int c = grid[0].size();
+    
+    vector<vector<int>> dir {{-1,0}, {0,1}, {1,0}, {0,-1}};
+    int fresh = 0;
+    queue<int> que;
+    int time = 0;
+    
+    for(int i = 0; i < r; ++i){
+        for(int j = 0; j < c; ++j){
+            if(grid[i][j] == 2){
+                int oneDidx = i * c + j;
+                que.push(oneDidx);
+            }
+            else if(grid[i][j] == 1){
+                fresh++;
+            }
+        }
+    }
+    
+    if(fresh == 0)
+        return 0;
+    
+    while(que.size() != 0){
+        int size = que.size();
+        
+        while(size--){
+            int rv = que.front();
+            que.pop();
+            
+            int x = rv / c;
+            int y = rv % c;
+            
+            for(int i = 0; i < dir.size(); ++i){
+                int ri = x + dir[i][0];
+                int ci = y + dir[i][1];
+                
+                if(ri > -1 && ri < r && ci > -1 && ci < c && grid[ri][ci] == 1){
+                    int oneDidx = ri * c + ci;
+                    que.push(oneDidx);
+                    grid[ri][ci] = 2;
+                    fresh--;
+                    if(fresh == 0)
+                        return time + 1;
+                }
+            }
+        }
+        time++;
+    }
+    
+    return -1;
+}
