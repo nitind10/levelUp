@@ -285,3 +285,101 @@ int orangesRotting(vector<vector<int>>& grid) {
     
     return -1;
 }
+
+
+
+
+// === topolocial sort type ==============================================
+//207 
+bool kahnsAlgo(vector<vector<int>>& graph){
+    int N = graph.size();
+    vector<int> indegree(N, 0);
+
+    for(int i = 0; i < N; ++i){
+        for(int e : graph[i])
+            indegree[e]++;
+    }
+
+    queue<int> que;
+    int count = 0;
+
+    for(int i = 0; i < N; ++i)
+        if(indegree[i] == 0)
+            que.push(i);
+
+    while(que.size() != 0){
+        int size = que.size();
+
+        while(size--){
+            int rv = que.front();
+            que.pop();
+            count++;
+
+            for(int e : graph[rv]){
+                if(--indegree[e] == 0)
+                    que.push(e);
+            }
+        }
+    }
+
+    return count == N;
+}
+
+bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+    if(prerequisites.size() == 0)
+        return true;
+    
+    vector<vector<int>> graph(numCourses);
+    for(int i = 0; i < prerequisites.size(); ++i)
+        graph[prerequisites[i][0]].push_back(prerequisites[i][1]);
+    
+    return kahnsAlgo(graph);
+    
+}
+
+//210 ===================================================================
+vector<int> kahnsAlgo(vector<vector<int>>& graph){
+        int N = graph.size();
+        vector<int> indegree(N, 0);
+
+        for(int i = 0; i < N; ++i){
+            for(int e : graph[i])
+                indegree[e]++;
+        }
+
+        queue<int> que;
+        vector<int> ans;
+
+        for(int i = 0; i < N; ++i)
+            if(indegree[i] == 0)
+                que.push(i);
+
+        while(que.size() != 0){
+            int size = que.size();
+
+            while(size--){
+                int rv = que.front();
+                que.pop();
+                ans.push_back(rv);
+
+                for(int e : graph[rv]){
+                    if(--indegree[e] == 0)
+                        que.push(e);
+                }
+            }
+        }
+
+        if(ans.size() == N){
+            reverse(ans.begin(), ans.end());
+            return ans;
+        }
+         else
+             return {};
+}
+vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+    vector<vector<int>> graph(numCourses);
+    for(int i = 0; i < prerequisites.size(); ++i)
+        graph[prerequisites[i][0]].push_back(prerequisites[i][1]);
+
+    return kahnsAlgo(graph);
+}
