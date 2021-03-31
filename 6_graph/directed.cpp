@@ -34,6 +34,10 @@ void display(){
     }
 }
 
+//topological sort works for a directed acyclic graph i.e DAG
+
+//gives topological sort order using DFS ==============================================
+//will also give answer when there is cycle(gotta use in kosaraju step1), but that wont make sense when considering it as the order to solve dependencies
 void DFS_topo_helper(int src, vector<bool>& visited, vector<int>& ans){
     visited[src] = true;
     for(Edge e : graph[src])
@@ -55,6 +59,7 @@ void DFS_topo(){
     cout << endl; 
 }
 
+//gives topological sort order using BFS (if cycle not present), otherwise flag the presence of cycle ================================================
 void kahnsAlgo(){
     vector<int> indegree(N, 0);
 
@@ -97,6 +102,52 @@ void kahnsAlgo(){
         cout << endl;
     }
 }
+
+//gives topological sort order using DFS (if cycle not present), otherwise flag the presence of cycle ================================================
+bool isCyclePresent_DFSTopo(int src, vector<int> &vis, vector<int> &ans)
+{
+    vis[src] = 0;
+    bool res = false;
+    for (Edge e : graph[src])
+    {
+        if (vis[e.v] == -1)
+        { // unvisited
+            res = res || isCyclePresent_DFSTopo(e.v, vis, ans);
+        }
+        else if (vis[e.v] == 0)
+        {
+            
+            vis[src] = 1; // ***************** required acc to me, sir forgot maybe
+
+            return true; // there is cycle.
+        }
+    }
+
+    vis[src] = 1;
+    ans.push_back(src);
+    return res;
+}
+
+vector<int> isCyclePresent_DFS()
+{
+    vector<int> vis(N, -1);
+    vector<int> ans;
+
+    bool res = false;
+    for (int i = 0; i < N; i++)
+    {
+        if (vis[i] == -1)
+        {
+            res = res || isCyclePresent_DFSTopo(i, vis, ans);
+        }
+    }
+
+    if (res)
+        ans.clear();
+    return ans;
+}
+
+
 
 void constructGraph(){
     addEdge(0, 1, 10);

@@ -383,3 +383,70 @@ vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
 
     return kahnsAlgo(graph);
 }
+
+//329 ===================================================================================
+void findIndegree(vector<vector<int>>& indegree, vector<vector<int>>& matrix, int m, int n, vector<vector<int>>& dir){
+        for(int i = 0; i < m; ++i){
+            for(int j = 0; j < n; ++j){
+                for(int k = 0; k < dir.size(); ++k){
+                    int r = i + dir[k][0];
+                    int c = j + dir[k][1];
+                    
+                    if(r > -1 && r < m && c > -1 && c < n && matrix[r][c] > matrix[i][j])
+                        indegree[r][c]++;
+                }
+            }
+        }
+    }
+    
+int kahnsAlgo(int m, int n, vector<vector<int>>& indegree, vector<vector<int>>& matrix, vector<vector<int>>& dir){
+    queue<int> que;
+    
+    for(int i = 0; i < m; ++i){
+        for(int j = 0; j < n; ++j){
+            if(indegree[i][j] == 0){
+                int oneDidx = i * n + j;
+                que.push(oneDidx);
+            }
+        }
+    }
+    
+    int level = 0;
+    while(que.size() != 0){
+        int size = que.size();
+        
+        while(size--){
+            int rv = que.front();
+            que.pop();
+            
+            int x = rv / n;
+            int y = rv % n;
+            
+            for(int k = 0; k < dir.size(); ++k){
+                int r = x + dir[k][0];
+                int c = y + dir[k][1];
+                
+                if(r > -1 && r < m && c > -1 && c < n && matrix[r][c] > matrix[x][y]){
+                    if(--indegree[r][c] == 0){
+                        int oneDidx = r * n + c;
+                        que.push(oneDidx);
+                    }
+                }     
+            }  
+        }
+        level++;
+    }
+    return level;
+}
+
+int longestIncreasingPath(vector<vector<int>>& matrix) {
+    int m = matrix.size();
+    int n = matrix[0].size();
+    
+        vector<vector<int>> dir {{-1,0}, {0,1}, {1,0}, {0,-1}};
+    
+    vector<vector<int>> indegree(m, vector<int>(n, 0));
+    findIndegree(indegree, matrix, m, n, dir);
+    
+    return kahnsAlgo(m, n, indegree, matrix, dir);
+}
