@@ -15,7 +15,7 @@ class Edge{
         }
 };
 
-const int N = 9;
+const int N = 11;
 vector<vector<Edge>> graph(N);
 
 void addEdge(int u, int v, int w){
@@ -46,17 +46,19 @@ void DFS_topo_helper(int src, vector<bool>& visited, vector<int>& ans){
 
     ans.push_back(src);
 }
-void DFS_topo(){
+vector<int> DFS_topo(){
     vector<bool> visited(N, false);
     vector<int> ans;
     for(int i = 0; i < N; ++i){
         if(!visited[i])
             DFS_topo_helper(i, visited, ans);
     }
-    cout << "Dependencies should be resolved in order : ";
-    for(int ele : ans)
-        cout << ele << " ";
-    cout << endl; 
+    // cout << "Dependencies should be resolved in order : ";
+    // for(int ele : ans)
+    //     cout << ele << " ";
+    // cout << endl; 
+
+    return ans;
 }
 
 //gives topological sort order using BFS (if cycle not present), otherwise flag the presence of cycle ================================================
@@ -147,28 +149,79 @@ vector<int> isCyclePresent_DFS()
     return ans;
 }
 
+//kosaraju algo  to find strongly connected components(SCC) =======================================================
+void SCC(int src, vector<bool>& visited, vector<int>& component, vector<vector<Edge>>& ngraph){
+    visited[src] = true;
+    component.push_back(src);
+    for(Edge e : ngraph[src])
+        if(!visited[e.v])
+            SCC(e.v, visited, component, ngraph);
+}
+void kosaraju(){
+    //step 1: topolocial sort
+    vector<int> ans = DFS_topo();
+
+    //step 2 : create an inverse graph
+    vector<vector<Edge>> ngraph(N);
+    for(int i = 0; i < N; ++i){
+        for(Edge e : graph[i]){
+            ngraph[e.v].push_back(Edge(i, 1));
+        }
+    }
+
+    //step 3: find SCC
+    vector<bool> visited(N, false);
+    for(int i = ans.size() - 1; i > -1; --i){
+        if(!visited[ans[i]]){
+            vector<int> component;
+            SCC(ans[i], visited, component, ngraph);
+            for(int ele : component)
+                cout << ele << " ";
+            cout << endl;
+        }
+    }
+}
 
 
 void constructGraph(){
-    addEdge(0, 1, 10);
-    addEdge(0, 3, 10);
-    addEdge(1, 2, 10);
-    addEdge(2, 3, 40);
-    addEdge(3, 4, 2);
-    addEdge(4, 5, 2);
-    addEdge(4, 6, 8);
-    addEdge(5, 6, 3);
-    addEdge(2, 8, 3);
-    addEdge(2, 7, 1);
+    // addEdge(0, 1, 10);
+    // addEdge(0, 3, 10);
+    // addEdge(1, 2, 10);
+    // addEdge(2, 3, 40);
+    // addEdge(3, 4, 2);
+    // addEdge(4, 5, 2);
+    // addEdge(4, 6, 8);
+    // addEdge(5, 6, 3);
+    // addEdge(2, 8, 3);
+    // addEdge(2, 7, 1);
 
     // addEdge(8, 7, 3);
     // addEdge(7, 2, 3);
 
+    addEdge(0, 1, 1);
+    addEdge(1, 2, 1);
+    addEdge(1, 10, 1);
+    addEdge(2, 0, 1);
+    addEdge(2, 3, 1);
+    addEdge(2, 4, 1);
+    addEdge(3, 5, 1);
+    addEdge(3, 6, 1);
+    addEdge(3, 7, 1);
+    addEdge(4, 3, 1);
+    addEdge(5, 4, 1);
+    addEdge(6, 5, 1);
+    addEdge(6, 9, 1);
+    addEdge(7, 8, 1);
+    addEdge(8, 9, 1);
+    addEdge(9, 7, 1);
+    addEdge(10, 7, 1);
+    addEdge(10, 8, 1);
 }
 
 int main(){
     constructGraph();
-    DFS_topo();
-    kahnsAlgo();
+    // DFS_topo();
+    // kahnsAlgo();
+    kosaraju();
     return 0;
 }
