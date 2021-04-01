@@ -198,6 +198,7 @@ void constructGraph(){
     // addEdge(8, 7, 3);
     // addEdge(7, 2, 3);
 
+    //kosaraju
     addEdge(0, 1, 1);
     addEdge(1, 2, 1);
     addEdge(1, 10, 1);
@@ -225,3 +226,4 @@ int main(){
     kosaraju();
     return 0;
 }
+
