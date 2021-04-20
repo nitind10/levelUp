@@ -690,3 +690,116 @@ int minCostToSupplyWater(int n, vector<int> &wells, vector<vector<int>> &pipes)
     });
 
     return minCostToSupplyWater_(n, pipes);
+
+//200 ===============================================================
+ int findPar(int u, vector<int>& par){
+        return par[u] == -1 ? u : par[u] = findPar(par[u], par);
+    }
+    void unionFind(vector<vector<char>>& grid, vector<int>& par, vector<vector<int>>& dir, int idx){
+        int m = grid.size();
+        int n = grid[0].size();
+        int r = idx / n;
+        int c = idx % n;
+        int p1 = findPar(r*n + c, par);
+        
+        for(int i = 0; i < dir.size(); ++i){
+            int x = r + dir[i][0];
+            int y = c + dir[i][1];
+            
+            if(x > -1 && x < m && y > -1 && y < n && grid[x][y] == '1'){
+                int p2 = findPar(x*n +y, par);
+                if(p1 != p2){
+                    par[p2] = p1;
+                }
+            }
+        }
+    }
+    int numIslands(vector<vector<char>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> dir {{1,0}, {0,1}};
+        
+        vector<int> par(m*n, -1);
+        
+        for(int i = 0; i < m; ++i){
+            for(int j = 0; j < n; ++j){
+                if(grid[i][j] == '1'){
+                    unionFind(grid, par, dir, i*n + j);
+                }
+            }
+        }
+        
+        int islands = 0;
+        for(int i = 0; i < par.size(); ++i){
+            cout<<par[i] << " ";
+            if(par[i] == -1 && grid[i/n][i%n] == '1')
+                islands++;
+        }
+        return islands;
+    }
+
+//695 similar
+//journey to moon hackerrank
+
+//mr president https://www.hackerearth.com/practice/algorithms/graphs/minimum-spanning-tree/practice-problems/algorithm/mr-president/ ==================================================================
+int findPar(int u, vector<int>& par){
+	return par[u] == u ? u : par[u] = findPar(par[u], par);
+}
+
+int unionFind(vector<vector<int>>& edges, int n, long k){
+	vector<int> par(n + 1);
+	for(int i = 0; i <= n; ++i)
+		par[i] = i;
+	
+	long mCost = 0;
+	vector<int> mstWeights;
+	for(vector<int>& edge : edges){
+		int u = edge[0], v = edge[1], w = edge[2];
+		int p1 = findPar(u, par);
+		int p2 = findPar(v, par);
+		if(p1 != p2){
+			par[p2] = p1;
+			mstWeights.push_back(w);
+			mCost += w;
+			n--;
+		}
+	}
+
+	//disconnected graph, no ans possible
+	if(n > 1)
+		return -1;
+	//no transformation needed
+	if(mCost <= k)
+		return 0;
+	
+	int i = mstWeights.size() - 1;
+	int ans = 0;
+	while(mCost > k && i > -1){
+		mCost -= mstWeights[i--];
+		mCost++;
+		ans++;
+	}
+	return mCost <= k ? ans : -1;
+}
+
+int main(){
+	//wrote this for fast i/o
+	ios_base::sync_with_stdio(false);
+
+	int n,m;
+	long k;
+	cin >> n >> m >> k;
+
+	vector<vector<int>> edges(m, vector<int>(3));
+	for(int i = 0; i < m; ++i){
+		cin >> edges[i][0];
+		cin >> edges[i][1];
+		cin >> edges[i][2];
+	}
+	sort(edges.begin(), edges.end(), [](vector<int>& a, vector<int>& b){
+		return a[2] < b[2];
+	});
+
+	cout << unionFind(edges, n, k) << endl;
+	return 0;
+}
