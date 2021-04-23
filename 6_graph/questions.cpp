@@ -864,3 +864,56 @@ int mainForThisQues(){
 
     return -1;
 }
+
+//743 =====================================================
+int networkDelayTime(vector<vector<int>> &times, int n, int k)
+{
+    vector<vector<pair<int, int>>> graph(n + 1);
+
+    // {u -> {v,w}}
+    for (vector<int> &ar : times)
+    {
+        graph[ar[0]].push_back({ar[1], ar[2]});
+    }
+
+    vector<int> dis(n + 1, 1e9);
+    vector<bool> vis(n + 1, false);
+
+    /*the first entity of a pair and vector alreaady has a comparator written on it
+    therefore we kept wst as first of pair, and built min heap*/
+    //{wsf,vtx}
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> que;
+    que.push({0, k});
+    dis[k] = 0;
+
+    int NoOfEdges = 0;
+    int maxValue = 0;
+    while (que.size() != 0)
+    {
+        pair<int, int> p = que.top();
+        que.pop();
+        int vtx = p.second, wsf = p.first;
+
+        if (vis[vtx])
+            continue;
+
+        if (vtx != k)
+            NoOfEdges++;
+
+        maxValue = max(maxValue, wsf);
+        vis[vtx] = true;
+        for (pair<int, int> &e : graph[vtx])
+        {
+            if (!vis[e.first] && wsf + e.second < dis[e.first])
+            {
+                dis[e.first] = wsf + e.second;
+                que.push({wsf + e.second, e.first});
+            }
+        }
+    }
+
+    if (NoOfEdges != n - 1)
+        return -1;
+
+    return maxValue;
+}
