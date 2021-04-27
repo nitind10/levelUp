@@ -70,7 +70,7 @@ int fibo_03(int N){
 
 //maze path 1 jump ===========================================================================================================
 
-//recursive. time : O(3^max(R,C))
+//recursive. time : O(3^(R+C))  number of calls ^ max ht of tree
 
 //memoized. time : O(R*C)
 int maze1_memo(int sr, int sc, int dr, int dc, vector<vector<int>>& dp){
@@ -120,7 +120,9 @@ int maze1_tab(int sr, int sc, int dr, int dc, vector<vector<int>>& dp){
 
 //maze path multiple jump ===========================================================================================================
 
-//memoized
+//recursive. time : O( 3(R+C) ^ (R+C) )
+
+//memoized. time : O((R*C)(R+C))
 int maze2_memo(int sr, int sc, int dr, int dc, vector<vector<int>>& dp){
     if(sr == dr && sc == dc)
         return dp[sr][sc] = 1;
@@ -129,22 +131,20 @@ int maze2_memo(int sr, int sc, int dr, int dc, vector<vector<int>>& dp){
         return dp[sr][sc];
     
     int count = 0;
-    for(int i = 1; i <= dc; ++i)
-        if(sc+i <= dc)
-            count += maze2_memo(sr, sc+i, dr, dc, dp);
+    for(int i = 1; sc+i <= dc; ++i)
+        count += maze2_memo(sr, sc+i, dr, dc, dp);
 
-    for(int i = 1; i <= min(dr,dc); ++i)
+    for(int i = 1; sr+i <= dr && sc+i <= dc; ++i)
         if(sr+i <= dr && sc+i <= dc)
             count += maze2_memo(sr+i, sc+i,dr, dc, dp);
 
-    for(int i = 1; i <= dr; ++i)
-        if(sr+i <= dc)
-            count += maze2_memo(sr+i, sc, dr, dc, dp);
+    for(int i = 1; sr+i <= dr; ++i)
+        count += maze2_memo(sr+i, sc, dr, dc, dp);
 
     return dp[sr][sc] = count;
 }
 
-//tabulated
+//tabulated. time : O((R*C)(R+C))
 int maze2_tab(int sr, int sc, int dr, int dc, vector<vector<int>>& dp){
     for(sr = dr; sr > -1; --sr){
         for(sc = dc; sc > -1; --sc){
@@ -155,17 +155,14 @@ int maze2_tab(int sr, int sc, int dr, int dc, vector<vector<int>>& dp){
             }
                 
             int count = 0;
-            for(int i = 1; i <= dc; ++i)
-                if(sc+i <= dc)
-                    count += dp[sr][sc+i];
+            for(int i = 1; sc+i <= dc; ++i)
+                count += dp[sr][sc+i];
 
-            for(int i = 1; i <= min(dr,dc); ++i)
-                if(sr+i <= dr && sc+i <= dc)
-                    count += dp[sr+i][sc+i];
+            for(int i = 1; sr+i <= dr && sc+i <= dc; ++i)
+                count += dp[sr+i][sc+i];
 
-            for(int i = 1; i <= dr; ++i)
-                if(sr+i <= dc)
-                    count += dp[sr+i][sc];
+            for(int i = 1; sr+i <= dr; ++i)
+                count += dp[sr+i][sc];
 
             dp[sr][sc] = count;
         }
@@ -174,11 +171,60 @@ int maze2_tab(int sr, int sc, int dr, int dc, vector<vector<int>>& dp){
 }
 
 
+//dice on number line =============================================================================
+
+int diceAndLine_memo(int src, int dest, vector<int>& dice, vector<int>& dp){
+    if(src == dest)
+        return dp[src] = 1;
+
+    if(dp[src] != 0)
+        return dp[src];
+
+    int count = 0;
+    for(int i = 0; i < dice.size(); ++i){
+        if(src + dice[i] <= dest)
+            count += diceAndLine_memo(src + dice[i], dest, dice, dp);
+    }
+    return dp[src] = count;
+}
+
+int diceAndLine_tab(int SRC, int dest, vector<int>& dice, vector<int>& dp){
+    for(int src = dest; src >= SRC; --src){
+        if(src == dest){
+            dp[src] = 1;
+            continue;
+        }
+
+        int count = 0;
+        for(int i = 0; i < dice.size(); ++i){
+            if(src + dice[i] <= dest)
+                count += dp[src+dice[i]];
+        }
+        dp[src] = count;
+    }
+    return dp[SRC];
+}
+
+//more optimized
+int diceAndLine_03(int SRC, int dest, vector<int>& dice, vector<int>& temp){
+    for(int src = dest; src >= SRC; --src){
+      if(src == dest){
+          temp[0] = 1;
+          continue;
+      }
+
+    for(int i = 0; i < dice.size(); ++i){
+        if(src + dice[i] <= dest)
+            count += dp[src+dice[i]];
+        }
+    }
+}
+
 int main(){
 
-    int r = 3, c = 3;
-    vector<vector<int>> dp(r, vector<int>(c,0));
-    cout << maze2_tab(0,0,r-1,c-1,dp) << endl;
-    print2D(dp);
+    int n = 10;
+    vector<int> dp(n+1,0);
+    vector<int> dice {1,2,3,4,5,6};
+    cout << diceAndLine_tab(0,n,dice,dp) << endl;
     return 0;
 }
