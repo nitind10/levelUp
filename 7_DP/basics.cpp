@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<list>
 
 using namespace std;
 
@@ -181,13 +182,13 @@ int diceAndLine_memo(int src, int dest, vector<int>& dice, vector<int>& dp){
         return dp[src];
 
     int count = 0;
-    for(int i = 0; i < dice.size(); ++i){
-        if(src + dice[i] <= dest)
-            count += diceAndLine_memo(src + dice[i], dest, dice, dp);
+    for(int i = 0; i < dice.size() && src + dice[i] <= dest; ++i){
+        count += diceAndLine_memo(src + dice[i], dest, dice, dp);
     }
     return dp[src] = count;
 }
 
+//time: O(6N) (if we consider dice is fixed as 1,2,3,4,5,6) space: o(n)
 int diceAndLine_tab(int SRC, int dest, vector<int>& dice, vector<int>& dp){
     for(int src = dest; src >= SRC; --src){
         if(src == dest){
@@ -196,28 +197,32 @@ int diceAndLine_tab(int SRC, int dest, vector<int>& dice, vector<int>& dp){
         }
 
         int count = 0;
-        for(int i = 0; i < dice.size(); ++i){
-            if(src + dice[i] <= dest)
-                count += dp[src+dice[i]];
+        for(int i = 0; i < dice.size() && src + dice[i] <= dest; ++i){
+            count += dp[src+dice[i]];
         }
         dp[src] = count;
     }
     return dp[SRC];
 }
 
-//more optimized
-int diceAndLine_03(int SRC, int dest, vector<int>& dice, vector<int>& temp){
+//more optimized time: O(N) space: O(7) i.e constant
+int diceAndLine_03(int SRC, int dest, vector<int>& dice){
+    list<int> l; //by default it is a doubly linkedlist with tail pointer
     for(int src = dest; src >= SRC; --src){
-      if(src == dest){
-          temp[0] = 1;
-          continue;
-      }
-
-    for(int i = 0; i < dice.size(); ++i){
-        if(src + dice[i] <= dest)
-            count += dp[src+dice[i]];
+        if(src >= dest - 1)
+            l.push_front(1); //o(1)
+        else{
+            if(l.size() <= 6){ //complexity not stated clearly::  if size variable kept in class => o(1) else o(n)
+                l.push_front(l.front() * 2);
+            }
+            else{
+                int ele = l.back();
+                l.pop_back(); //o(1)
+                l.push_front(l.front() * 2 - ele);
+            }
         }
     }
+    return l.front();
 }
 
 int main(){
@@ -225,6 +230,7 @@ int main(){
     int n = 10;
     vector<int> dp(n+1,0);
     vector<int> dice {1,2,3,4,5,6};
-    cout << diceAndLine_tab(0,n,dice,dp) << endl;
+    cout << diceAndLine_03(0,n,dice) << endl;
+    print1D(dp);
     return 0;
 }
