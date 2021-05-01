@@ -4,6 +4,7 @@
 #include<iostream>
 #include<vector>
 #include<list>
+#include<algorithm>
 
 using namespace std;
 
@@ -228,12 +229,241 @@ int diceAndLine_03(int SRC, int dest, vector<int>& dice){
     return l.front();
 }
 
-int main(){
 
-    int n = 10;
-    vector<int> dp(n+1,0);
-    vector<int> dice {1,2,3,4,5,6};
-    cout << diceAndLine_03(0,n,dice) << endl;
-    print1D(dp);
+//70 =======================================================================================
+int memo(int src, int dest, vector<int>& dp){
+        if(src == dest){
+            return dp[src] = 1;
+        }
+        
+        if(dp[src] != 0)
+            return dp[src];
+        
+        int ways = 0;
+        if(src+1 <= dest)
+            ways += memo(src+1, dest, dp);
+        if(src+2 <= dest)
+            ways += memo(src+2, dest, dp);
+        return dp[src] = ways;
+    }
+    int climbStairs(int n) {
+        vector<int> dp(n+1, 0);
+        return memo(0, n, dp);
+    }
+
+//tabulated
+ int climbStairs(int dest) {
+        vector<int> dp(dest+1, 0);
+    
+        for(int src = dest; src > -1; --src){
+             if(src == dest){
+                 dp[src] = 1;
+                 continue;
+             }
+
+            int ways = 0;
+            if(src+1 <= dest)
+                ways += dp[src+1];
+            if(src+2 <= dest)
+                ways += dp[src+2];
+            
+            dp[src] = ways;
+        }
+        return dp[0];
+    }
+
+//optimized, can be done simply too, using a and b pointer
+int climbStairs(int dest) {
+       //ver imp, as (l.front() * 2) can overflow
+        list<long> l;
+    
+        for(int src = dest; src > -1; --src){
+             if(src >= dest-1){
+                 l.push_front(1);
+             }
+             else{
+                 if(l.size() <= 2)
+                     l.push_front(l.front() * 2);
+                 else{
+                     int ele = l.back();
+                     l.pop_back();
+                     l.push_front(l.front() * 2 - ele);
+                 }
+             }
+        }
+        return l.front();
+    }
+
+
+//746 ==============================================================================================
+int fn(vector<int>& cost, int src, int dest, vector<int>& dp){
+        if(src == dest)
+            return dp[src] = 0;
+        
+        if(dp[src] != -1)
+            return dp[src];
+        
+        int ans1 = 1e9, ans2 = 1e9;
+        
+        if(src+1 <= dest)
+            ans1 = fn(cost, src+1, dest, dp);
+        if(src+2 <= dest)
+            ans2 = fn(cost, src+2, dest, dp);
+        
+        if(src==0)
+            return dp[src] = min(ans1, ans2+cost[src]);
+        else
+            return dp[src] = min(ans1, ans2) + cost[src];
+    }
+    int minCostClimbingStairs(vector<int>& cost) {
+        int n = cost.size();
+        vector<int> dp(n+1, -1);
+        return fn(cost,0, n, dp);
+    }
+
+//tabulated
+int minCostClimbingStairs(vector<int>& cost) {
+        int n = cost.size();
+        vector<int> dp(n+1, -1);
+        
+        int dest = n;
+        for(int src = n; src > -1; --src){
+            if(src == dest){
+                dp[src] = 0;
+                continue;
+            }
+                
+            int ans1 = 1e9, ans2 = 1e9;
+
+            if(src+1 <= dest)
+                ans1 = dp[src+1];
+            if(src+2 <= dest)
+                ans2 = dp[src+2];
+
+            if(src == 0)
+                dp[src] = min(ans1, ans2+cost[src]);
+            else
+                dp[src] = min(ans1, ans2) + cost[src];
+        }
+        return dp[0];
+    }
+
+//can be optimized too
+
+
+//friends pairing https://practice.geeksforgeeks.org/problems/friends-pairing-problem5425/1# ==================================
+ int mod = 1e9 + 7;
+    long countFriendsPairings_memo(int n, vector<long>&dp){
+        if(n <= 1){
+            return dp[n] = 1;
+        }
+        
+        if(dp[n] != 0)
+            return dp[n];
+        
+        long single = countFriendsPairings_memo(n-1, dp);
+        long pairup = countFriendsPairings_memo(n-2, dp) * (n-1);
+        
+        return dp[n] = ((single % mod + pairup % mod) % mod);
+    }
+
+    long countFriendsPairings_tab(int N, vector<long>&dp){
+        for(int n = 0; n <= N; ++n){
+            if(n <= 1){
+                dp[n] = 1;
+                continue;
+            }
+        
+            long single = dp[n-1];
+            long pairup = dp[n-2] * (n-1);
+            
+            dp[n] = ((single % mod + pairup % mod) % mod);
+        }
+        return dp[N];
+    }
+    long countFriendsPairings(int n) 
+    { 
+        // code here
+        vector<long> dp(n+1, 0);
+        return countFriendsPairings_tab(n, dp);
+    }
+
+//can be optimized too
+
+//printing all the answers (no dp possible)
+long printFriendsPairing(string friends, string ans) {
+    if (friends.length() == 0) {
+        cout << ans << endl;
+        return 1;
+    }
+
+    char ch = friends[0];
+    long count = 0;
+    count += printFriendsPairing(friends.substr(1), ans + ch + " ");
+    for (int i = 1; i < friends.length(); i++) {
+        string rstr = friends.substr(1, i-1) + friends.substr(i + 1);
+        count += printFriendsPairing(rstr, ans + ch + friends[i] + " ");
+    }
+    return count;
+}
+
+//goldmine https://practice.geeksforgeeks.org/problems/gold-mine-problem2608/1 =====================================================
+ int goldMine_memo(int n, int m, vector<vector<int>>& M, int ri, int ci, vector<vector<int>>& dp){
+        if(ci == m-1)
+            return dp[ri][ci] = M[ri][ci];
+            
+        if(dp[ri][ci] != -1)
+            return dp[ri][ci];
+            
+        int ans = 0;
+        //this loop works for these directions
+        for(int i = 0; i <= 2; ++i)
+            if(ri+i-1 > -1 && ri+i-1 < n)
+                ans = max(ans, goldMine_memo(n, m, M, ri+i-1, ci+1, dp));
+        
+        return dp[ri][ci] = ans + M[ri][ci];
+    }
+    int goldMine_tab(int n, int m, vector<vector<int>>& M, vector<vector<int>>& dp){
+        
+        for(int ci = m-1; ci > -1; --ci){
+            for(int ri = n-1; ri > -1; --ri){
+                
+                if(ci == m-1){
+                    dp[ri][ci] = M[ri][ci];
+                    continue;
+                }
+                
+                int ans = 0;
+                for(int i = 0; i <= 2; ++i)
+                    if(ri+i-1 > -1 && ri+i-1 < n)
+                        ans = max(ans, dp[ri+i-1][ci+1]);
+                
+                dp[ri][ci] = ans + M[ri][ci];
+            }
+        }
+        
+        int gold = 0;
+        for(int i = 0; i < n; ++i)
+            gold = max(gold, dp[i][0]);
+        
+        return gold;
+    }
+    int maxGold(int n, int m, vector<vector<int>> M)
+    {
+        // code here
+        //int gold = 0;
+        vector<vector<int>> dp(n, vector<int>(m, -1));
+        
+        // for(int i = 0; i < n; ++i){
+        //     gold = max(gold, goldMine_memo(n , m, M, i, 0, dp));
+        // }
+        // return gold;
+        
+        return goldMine_tab(n, m, M, dp);
+    }
+
+
+int main(){
+    cout << printFriendsPairing("ABCDE", "") << endl;
     return 0;
 }
