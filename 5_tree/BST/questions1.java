@@ -18,7 +18,7 @@ public class questions1 {
     }
 
     //BINARY TREE : inorder predessor and successor O(N)
-    void allSolution(Treenode node, int data, allSolPair pair){
+    void allSolution(TreeNode node, int data, allSolPair pair){
         if(node == null)
             return;
 

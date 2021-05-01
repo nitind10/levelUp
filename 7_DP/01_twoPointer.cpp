@@ -1,3 +1,6 @@
+//includes two pinter type questions
+//i.e problems that are most optimized using two pointer type approach
+
 #include<iostream>
 #include<vector>
 #include<list>
