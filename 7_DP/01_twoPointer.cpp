@@ -463,6 +463,276 @@ long printFriendsPairing(string friends, string ans) {
     }
 
 
+//91 ==============================================================================================================
+ int numDecodings_memo(string s, int idx, vector<int>& dp){
+        if(idx == s.length())
+            return dp[idx] = 1;
+        
+        if(s[idx] == '0')
+            return dp[idx] = 0;
+        
+        if(dp[idx] != -1)
+            return dp[idx];
+        
+        int count = 0;
+        count += numDecodings_memo(s, idx+1, dp);
+        
+        if(idx < s.length() - 1){
+            int num = (s[idx] - '0') * 10 + (s[idx+1] - '0');
+            if(num <= 26)
+                count += numDecodings_memo(s, idx+2, dp);
+        }
+        return dp[idx] = count;
+    }
+    
+    int numDecodings_tab(string s, int IDX, vector<int>& dp){
+        
+        for(int idx = s.length(); idx > -1; --idx){
+            
+             if(idx == s.length()){
+                 dp[idx] = 1;
+                 continue;
+             }
+             if(s[idx] == '0'){
+                 dp[idx] = 0;
+                 continue;
+             }
+               
+            int count = 0;
+            count += dp[idx+1];
+
+            if(idx < s.length() - 1){
+                int num = (s[idx] - '0') * 10 + (s[idx+1] - '0');
+                if(num <= 26)
+                    count += dp[idx+2];
+            }
+            dp[idx] = count;
+        }
+        
+        return dp[IDX];
+    }
+    
+    int numDecodings_optimized(string s, int idx){
+        int a = 0, b = 1;
+        int sum = a + b;
+        
+        while(idx > -1){
+            if(s[idx] == '0'){
+                sum = 0;
+            }
+            else{
+                sum = b;
+                if(idx < s.length()-1){
+                    int num = (s[idx]-'0')*10 + (s[idx+1]-'0');
+                    if(num <= 26)
+                        sum += a;
+                }
+            }
+            a = b;
+            b = sum;
+            idx--;
+        }
+        return b;
+    }
+    
+    int numDecodings(string s) {
+        int n = s.length();
+        //vector<int> dp(n+1, -1);
+             
+        return numDecodings_optimized(s, n-1);
+    }
+
+
+//639 ====================================================================================================================
+int mod = 1e9 + 7;
+    //passed string by refference because in a very big test case it was giving tle otherwise
+    long numDecodings_memo(string& s, int n, int idx, vector<long>& dp){
+        if(idx == n)
+            return dp[idx] = 1;
+        if(s[idx] == '0')
+            return dp[idx] = 0;
+        
+        if(dp[idx] != -1)
+            return dp[idx];
+        
+        long count = 0;
+        
+        //s[idx] is number
+        if(s[idx] != '*'){
+            //taking only 1 digit
+            count = (count%mod + numDecodings_memo(s, n, idx+1, dp)%mod) % mod;
+            
+            //taking 2 digits if possible
+            if(idx < n-1){
+                //2nd digit is number
+                if(s[idx+1] != '*'){
+                    int num = (s[idx]-'0')*10 + (s[idx+1]-'0');
+                    if(num <= 26)
+                        count = (count%mod + numDecodings_memo(s, n, idx+2, dp)%mod) % mod;
+                }
+                //2nd digit is star
+                else{
+                    if(s[idx] == '1')
+                         count = (count%mod + 9*numDecodings_memo(s, n, idx+2, dp)%mod) % mod;
+                    else if(s[idx] == '2')
+                         count = (count%mod + 6*numDecodings_memo(s, n, idx+2, dp)%mod) % mod;
+                }
+            }
+        }
+        
+        //s[idx] is *
+        else{
+             count = (count%mod + 9*numDecodings_memo(s, n, idx+1, dp)%mod) % mod;
+            
+            //taking 2 digits if possible
+            if(idx < n-1){
+                //2nd digit is number
+                if(s[idx+1] != '*'){
+                    if(s[idx+1] >= '0' && s[idx+1] <= '6')
+                        count = (count%mod + 2*numDecodings_memo(s, n, idx+2, dp)%mod) % mod;
+                    else
+                        count = (count%mod + numDecodings_memo(s, n, idx+2, dp)%mod) % mod;
+                }
+                //2nd digit is *
+                else{
+                    count = (count%mod + 15*numDecodings_memo(s, n, idx+2, dp)%mod) % mod;
+                }
+            }
+        }
+        
+        return dp[idx] = count;
+    }
+    
+    long numDecodings_tab(string s, int n, int IDX, vector<long>& dp){
+        for(int idx = n; idx > -1; --idx){
+             if(idx == n){
+                 dp[idx] = 1;
+                 continue;
+             }   
+             if(s[idx] == '0'){
+                 dp[idx] = 0;
+                 continue;
+             }
+        
+            long count = 0;
+
+            //s[idx] is number
+            if(s[idx] != '*'){
+                //taking only 1 digit
+                count = (count%mod + dp[idx+1]%mod) % mod;
+
+                //taking 2 digits if possible
+                if(idx < n-1){
+                    //2nd digit is number
+                    if(s[idx+1] != '*'){
+                        int num = (s[idx]-'0')*10 + (s[idx+1]-'0');
+                        if(num <= 26)
+                            count = (count%mod + dp[idx+2]%mod) % mod;
+                    }
+                    //2nd digit is star
+                    else{
+                        if(s[idx] == '1')
+                             count = (count%mod + 9*dp[idx+2]%mod) % mod;
+                        else if(s[idx] == '2')
+                             count = (count%mod + 6*dp[idx+2]%mod) % mod;
+                    }
+                }
+            }
+
+            //s[idx] is *
+            else{
+                 count = (count%mod + 9*dp[idx+1]%mod) % mod;
+
+                //taking 2 digits if possible
+                if(idx < n-1){
+                    //2nd digit is number
+                    if(s[idx+1] != '*'){
+                        if(s[idx+1] >= '0' && s[idx+1] <= '6')
+                            count = (count%mod + 2*dp[idx+2]%mod) % mod;
+                        else
+                            count = (count%mod + dp[idx+2]%mod) % mod;
+                    }
+                    //2nd digit is *
+                    else{
+                        count = (count%mod + 15*dp[idx+2]%mod) % mod;
+                    }
+                }
+            }
+
+            dp[idx] = count;
+        }
+        return dp[IDX];
+    }
+    
+     long numDecodings_optimized(string s, int n, int idx){
+        long a = 0, b = 1;
+        long sum = a + b;
+        
+        while(idx > -1){
+            if(s[idx] == '0'){
+                sum = 0;
+            }
+            else{
+               if(s[idx] != '*'){
+                   //one digit
+                   sum = b;
+                   
+                    //taking 2 digits if possible
+                    if(idx < n-1){
+                        //2nd digit is number
+                        if(s[idx+1] != '*'){
+                            int num = (s[idx]-'0')*10 + (s[idx+1]-'0');
+                            if(num <= 26)
+                                sum = (sum%mod + a%mod) % mod;
+                        }
+                        //2nd digit is star
+                        else{
+                            if(s[idx] == '1')
+                                 sum = (sum%mod + 9*a%mod) % mod;
+                            else if(s[idx] == '2')
+                                 sum = (sum%mod + 6*a%mod) % mod;
+                        }
+                    }
+                }
+
+                //s[idx] is *
+                else{
+                    //one digit
+                    sum = 9*b%mod;
+                    
+                    //taking 2 digits if possible
+                    if(idx < n-1){
+                        //2nd digit is number
+                        if(s[idx+1] != '*'){
+                            if(s[idx+1] >= '0' && s[idx+1] <= '6')
+                                sum = (sum%mod + 2*a%mod) % mod;
+                            else
+                                sum = (sum%mod + a%mod) % mod;
+                        }
+                        //2nd digit is *
+                        else{
+                            sum = (sum%mod + 15*a%mod) % mod;
+                        }
+                    }
+                }
+            }
+
+            a = b;
+            b = sum;
+            idx--;
+        }
+        return b;
+    }
+    
+    int numDecodings(string s) {
+        int n = s.length();
+        vector<long> dp(n+1, -1);
+        return int(numDecodings_optimized(s, n, n-1));
+    }
+
+
+
+
 int main(){
     cout << printFriendsPairing("ABCDE", "") << endl;
     return 0;
