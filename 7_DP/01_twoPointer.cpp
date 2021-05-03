@@ -731,7 +731,33 @@ int mod = 1e9 + 7;
     }
 
 
+//https://www.geeksforgeeks.org/count-number-of-ways-to-partition-a-set-into-k-subsets/ ===================================================================
+int kSubsets_memo(int n, int k, vector<vector<int>>& dp){
+    //very imp base case for tabulation
+    if(n == 0 || k == 0 || k > n){
+        return 0;
+    }
+    if(n == k || k == 1){
+        return dp[n][k] = 1;
+    }
+    if(dp[n][k] != 0)
+        return dp[n][k];
+        
+    int makesSeprateTeam = kSubsets_memo(n-1, k-1, dp);
+    int joinsOneOfOtherTeams = kSubsets_memo(n-1, k, dp);
+    
+    int ways = makesSeprateTeam + (joinsOneOfOtherTeams * k);
+    return dp[n][k] = ways;
+}
 
+int main() {
+	//code
+	int n,k;
+	cin>>n>>k;
+	vector<vector<int>> dp(n+1, vector<int>(k+1,0));
+	cout << kSubsets_memo(n , k, dp);
+	return 0;
+}
 
 int main(){
     cout << printFriendsPairing("ABCDE", "") << endl;
