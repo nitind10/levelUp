@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<algorithm>
 
 using namespace std;
 
@@ -128,4 +129,68 @@ using namespace std;
     }
 
 
-//
+//115 ================================================================================================================
+//sir did it in diff direction (n,m) to (0,0) so see that java code in submissions 
+
+int numDistinct_memo(string& s, int sIdx, string& t, int tIdx, vector<vector<int>>& dp){
+        //s is finished but requirement is still there || requirement is > s
+        if(sIdx == s.length() && tIdx < t.length() || (t.length() - tIdx) > (s.length() - sIdx))
+            return dp[sIdx][tIdx] = 0;
+        //requirement is finished
+        if(tIdx == t.length())
+            return dp[sIdx][tIdx] = 1;
+        
+        if(dp[sIdx][tIdx] != -1)
+            return dp[sIdx][tIdx];
+        
+        int ans = 0;
+        
+        //considering
+        if(s[sIdx] == t[tIdx])
+            ans += numDistinct_memo(s, sIdx+1, t, tIdx+1, dp);
+        
+        //not considering
+        ans += numDistinct_memo(s, sIdx+1, t, tIdx, dp);
+        
+        return dp[sIdx][tIdx] = ans;
+    }
+    
+    int numDistinct_tab(string& s, int SIdx, string& t, int TIdx, vector<vector<int>>& dp){
+        for(int sIdx = s.length(); sIdx > -1; --sIdx){
+            for(int tIdx = 0; tIdx <= t.length(); ++tIdx){
+               
+                if(sIdx == s.length() && tIdx < t.length() || (t.length() - tIdx) > (s.length() - sIdx)){
+                     dp[sIdx][tIdx] = 0;
+                    continue;
+                }
+                   
+                //requirement is finished
+                if(tIdx == t.length()){
+                    dp[sIdx][tIdx] = 1;
+                    continue;
+                }
+                
+                long ans = 0;
+
+                //considering
+                if(s[sIdx] == t[tIdx])
+                    ans += dp[sIdx+1][tIdx+1];
+
+                //not considering
+                ans += dp[sIdx+1][tIdx];
+
+                dp[sIdx][tIdx] = int(ans);
+            }
+        }
+        return dp[SIdx][TIdx];
+    }
+    int numDistinct(string s, string t) {
+        int sLen = s.length(), tLen = t.length();
+        vector<vector<int>> dp(sLen+1, vector<int>(tLen+1, -1));
+        int ans = numDistinct_memo(s, 0, t, 0, dp);
+        for(vector<int>&v:dp){
+            for(int ele:v)cout<<ele<<" ";
+            cout<<endl;
+        }
+        return ans;
+    }
