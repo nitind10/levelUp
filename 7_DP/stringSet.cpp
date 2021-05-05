@@ -194,3 +194,47 @@ int numDistinct_memo(string& s, int sIdx, string& t, int tIdx, vector<vector<int
         }
         return ans;
     }
+
+
+//1143 =========================================================================================
+int longestCommonSubsequence_memo(string& s, int sIdx, string& t, int tIdx, vector<vector<int>>& dp){
+        if(sIdx == s.length() || tIdx == t.length()){
+            return dp[sIdx][tIdx] = 0;
+        }
+        if(dp[sIdx][tIdx] != -1){
+            return dp[sIdx][tIdx];
+        }
+        if(s[sIdx] == t[tIdx]){
+            return dp[sIdx][tIdx] = longestCommonSubsequence_memo(s, sIdx+1, t, tIdx+1, dp) + 1;
+        }else{
+            return dp[sIdx][tIdx] = max(longestCommonSubsequence_memo(s, sIdx+1, t, tIdx, dp), longestCommonSubsequence_memo(s, sIdx, t, tIdx+1, dp));
+        }
+    }
+    
+    int longestCommonSubsequence_tab(string& s, int SIdx, string& t, int TIdx, vector<vector<int>>& dp){
+        for(int sIdx = s.length(); sIdx > -1; --sIdx){
+            for(int tIdx = t.length(); tIdx > -1; --tIdx){
+                if(sIdx == s.length() || tIdx == t.length()){
+                    dp[sIdx][tIdx] = 0;
+                    continue;
+                }
+               
+                if(s[sIdx] == t[tIdx])
+                    dp[sIdx][tIdx] = dp[sIdx+1][tIdx+1] + 1;
+                else
+                    dp[sIdx][tIdx] = max(dp[sIdx+1][tIdx], dp[sIdx][tIdx+1]);
+            }
+        }
+        return dp[SIdx][TIdx];
+    }
+    int longestCommonSubsequence(string s, string t) {
+        vector<vector<int>> dp(s.length()+1, vector<int>(t.length()+1, -1));
+        int ans = longestCommonSubsequence_tab(s, 0, t, 0, dp);
+        
+        for(vector<int>& v : dp){
+            for(int ele : v)
+                cout << ele << " ";
+            cout << endl;
+        }
+        return ans;
+    }
