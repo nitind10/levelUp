@@ -238,3 +238,115 @@ int longestCommonSubsequence_memo(string& s, int sIdx, string& t, int tIdx, vect
         }
         return ans;
     }
+
+//1035 =================================================================================
+int maxUncrossedLines_memo(vector<int>& A, int aIdx, vector<int>& B, int bIdx, vector<vector<int>>& dp){
+        if(aIdx == A.size() || bIdx == B.size())
+            return dp[aIdx][bIdx] = 0;
+        if(dp[aIdx][bIdx] != -1)
+            return dp[aIdx][bIdx];
+        
+        if(A[aIdx] == B[bIdx])
+            return dp[aIdx][bIdx] = maxUncrossedLines_memo(A, aIdx+1, B, bIdx+1, dp) + 1;
+        else
+            return dp[aIdx][bIdx] = max(maxUncrossedLines_memo(A, aIdx+1, B, bIdx, dp), maxUncrossedLines_memo(A, aIdx, B, bIdx+1, dp));
+    }
+    int maxUncrossedLines(vector<int>& A, vector<int>& B) {
+        vector<vector<int>> dp(A.size()+1, vector<int>(B.size()+1, -1));
+        return maxUncrossedLines_memo(A,0,B,0,dp);
+    }
+
+
+//1458 ================================================================================================
+int maxDotProduct_memo(vector<int>& nums1, int i, vector<int>& nums2, int j, vector<vector<int>>& dp){
+        if(i == nums1.size() || j == nums2.size()){
+            //returninng INT_MIN will overflow in includingBothIandJ case;
+            return dp[i][j] = -1e7;
+        }
+        if(dp[i][j] != -1e9)
+            return dp[i][j];
+        
+        int myProduct = nums1[i]*nums2[j];
+        int includingBothIandJ = myProduct + maxDotProduct_memo(nums1, i+1, nums2, j+1, dp);
+        int notConsideringJ = maxDotProduct_memo(nums1, i, nums2, j+1, dp);
+        int notConsideringI = maxDotProduct_memo(nums1, i+1, nums2, j, dp);
+        
+        return dp[i][j] = max({myProduct, includingBothIandJ, notConsideringJ, notConsideringI});
+    }
+    int maxDotProduct(vector<int>& nums1, vector<int>& nums2) {
+        vector<vector<int>> dp(nums1.size()+1, vector<int>(nums2.size()+1, -1e9));
+        return maxDotProduct_memo(nums1, 0, nums2, 0, dp);
+    }
+
+//72 ========================================================================================================
+int minDistance_memo(string& word1, int i, string& word2, int j, vector<vector<int>>& dp){
+        if(i == word1.length() && j == word2.length())
+            return dp[i][j] = 0;
+        if(i == word1.length() || j == word2.length())
+            return dp[i][j] = (i == word1.length()) ? word2.length() - j : word1.length() - i;
+            
+        if(dp[i][j] != -1)
+            return dp[i][j];
+        
+        if(word1[i] == word2[j])
+            return minDistance_memo(word1, i+1, word2, j+1, dp);
+        //not equal
+        int insert_ = 1 + minDistance_memo(word1, i, word2, j+1, dp);
+        int delete_ = 1 + minDistance_memo(word1, i+1, word2, j, dp);
+        int replace_ = 1 + minDistance_memo(word1, i+1, word2, j+1, dp);
+        
+        return dp[i][j] = min({insert_, delete_, replace_}); 
+    }
+    int minDistance(string word1, string word2) {
+        vector<vector<int>> dp(word1.length()+1, vector<int>(word2.length()+1, -1));
+        return minDistance_memo(word1, 0, word2, 0, dp);
+    }
+
+//44 =================================================================================================
+int wildMathch_memo(string& s, int i, string& p, int j, vector<vector<int>>& dp){
+        if(i == s.length() && j == p.length())
+            return dp[i][j] = 1;
+        if(i == s.length() || j == p.length()){
+            if(j == p.length())
+                return dp[i][j] = 0;
+            
+            //s has ended
+            if(j == p.length() - 1 && p[j] == '*')
+                return dp[i][j] = 1;
+            return dp[i][j] = 0;
+        }
+        
+        if(dp[i][j] != -1)
+            return dp[i][j];
+            
+        if(s[i] == p[j] || p[j] == '?')
+            return dp[i][j] = wildMathch_memo(s, i+1, p, j+1, dp);
+        
+        else if(p[j] == '*'){
+            bool res = false;
+            
+            //matcing * with ""
+            res = res || (wildMathch_memo(s, i, p, j+1, dp) == 1);
+            //matching * with some char
+            res = res || (wildMathch_memo(s, i+1, p, j, dp) == 1);
+            
+            return dp[i][j] = res ? 1 : 0;
+        }
+        else
+            return dp[i][j] = 0;
+    }
+    
+    bool isMatch(string s, string p) {
+        string temp;
+        for(int i = 0; i < p.length(); ++i){
+            //this is o(1) opearation in c++, in java it is o(n), therefore we use StringBuilder to make it o(1)
+            temp += p[i];
+            if(p[i] == '*'){
+                while(i+1 < p.length() && p[i+1] == '*')
+                    i++;
+            }
+        }
+        
+        vector<vector<int>> dp(s.length()+1, vector<int>(temp.length()+1, -1));
+        return wildMathch_memo(s, 0, temp, 0, dp) == 0 ? false : true;
+    }
