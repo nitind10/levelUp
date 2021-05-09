@@ -350,3 +350,36 @@ int wildMathch_memo(string& s, int i, string& p, int j, vector<vector<int>>& dp)
         vector<vector<int>> dp(s.length()+1, vector<int>(temp.length()+1, -1));
         return wildMathch_memo(s, 0, temp, 0, dp) == 0 ? false : true;
     }
+
+//https://practice.geeksforgeeks.org/problems/count-palindromic-subsequences/1 ==================================================================
+    int mod = 1e9 + 7;
+    long long int palSubseq(string& s, int i, int j, vector<vector<long long int>>& dp){
+        if(i >= j){
+            return dp[i][j] = (i == j) ? 1 : 0; 
+        }
+        
+        if(dp[i][j] != -1)
+            return dp[i][j];
+        
+        long long int excludingI = palSubseq(s, i+1, j, dp);
+        long long int excludingJ = palSubseq(s, i, j-1, dp);
+        long long int excludingBoth = palSubseq(s, i+1, j-1, dp);
+        
+        // (a+b)%m = (a%m + b%m)%m
+        long long int ans = ((excludingI % mod) + (excludingJ % mod)) % mod;
+        
+        if(s[i] == s[j]){
+            return dp[i][j] = ans + 1;
+        }
+        else{
+            // (a-b)%m = (a%m - b%m + m)%m
+            return dp[i][j] = ((ans % mod) - (excludingBoth % mod) + mod) % mod;
+        }
+    }
+    long long int  countPS(string str)
+    {
+       //Your code here
+       int n = str.length();
+       vector<vector<long long int>> dp(n, vector<long long int>(n, -1));
+       return palSubseq(str, 0, n-1, dp);
+    }
