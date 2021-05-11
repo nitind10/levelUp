@@ -149,6 +149,50 @@ int coinChangeHelper(vector<int>& coins, int tar, vector<int>& dp){
         return dp[target];
     }
 
+ // https://www.geeksforgeeks.org/find-number-of-solutions-of-a-linear-equation-of-n-variables/ ===========================================
+    int numberOfSolution(vector<int>& arr, int Tar) {
+        vector<int> dp(Tar + 1, 0);
+
+        for (int tar = 0; tar <= Tar; tar++) {
+            for (int ele : arr) {
+                if (tar - ele >= 0)
+                    dp[tar] += dp[tar - ele];
+            }
+        }
+
+        return dp[Tar];
+    }
+
+    int numberOfSolution_print(vector<int>& arr, int Tar, int aTar, int idx, vector<int>& coff) {
+        if (Tar == 0) {
+            for (int i = 0; i < arr.size(); i++) {
+                cout << arr[i] <<  "(" << coff[i] << ")";
+                if (i != arr.size() - 1)
+                    cout << " + ";
+            }
+
+            cout << " = " <<  aTar << endl;
+            return 1;
+        }
+
+        int count = 0;
+        for (int i = idx; i < arr.size(); i++) {
+            if (Tar - arr[i] >= 0) {
+                coff[i]++;
+                count += numberOfSolution_print(arr, Tar - arr[i], aTar, i, coff);
+                coff[i]--;
+            }
+        }
+
+        return count;
+    }
+
+    void numberOfSolution() {
+        vector<int> arr = { 2, 3, 5, 7 };
+        int tar = 10;
+        vector<int> coff(arr.size(), 0);
+        cout << numberOfSolution_print(arr, tar, tar, 0, coff) << endl;
+    }
 
 
 int main(){
