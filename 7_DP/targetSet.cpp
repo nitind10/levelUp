@@ -407,7 +407,47 @@ int knapSack01(int bagWt, int wt[], int val[], int n, vector<vector<int>>& dp){
     }
 
 
-//
+//698 ===========================================================================================
+bool canPartitionKSubsets(vector<int>& arr, int k, int idx, int sumSF, int tar, vector<bool>& vis) {
+        if (k == 0)
+            return true;
+        if (sumSF > tar)
+            return false;
+        if (sumSF == tar) {
+            return canPartitionKSubsets(arr, k - 1, 0, 0, tar, vis);
+        }
+
+        bool res = false;
+        for (int i = idx; i < arr.size(); i++) {
+            if (vis[i])
+                continue;
+            vis[i] = true;
+            res = res || canPartitionKSubsets(arr, k, i + 1, sumSF + arr[i], tar, vis);
+            vis[i] = false;
+        }
+
+        return res;
+
+    }
+
+    bool canPartitionKSubsets(vector<int> arr, int k) {
+        int n = arr.size();
+        int sum = 0;
+        int maxEle = 0;
+        for (int ele : arr) {
+            sum += ele;
+            maxEle = max(maxEle, ele);
+        }
+
+        if (sum % k != 0 || maxEle > sum / k)
+            return false;
+        
+        vector<bool> vis(n, false);
+
+        return canPartitionKSubsets(arr, k, 0, 0, sum / k, vis);
+    }
+
+    
 
 void targetSum(){
     vector<int> arr {2,3,5,7};
