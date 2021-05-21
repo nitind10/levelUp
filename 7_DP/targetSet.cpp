@@ -1,5 +1,7 @@
 #include<iostream>
 #include<vector>
+#include<string>
+#include<algorithm>
 
 using namespace std;
 
@@ -194,8 +196,241 @@ int coinChangeHelper(vector<int>& coins, int tar, vector<int>& dp){
         cout << numberOfSolution_print(arr, tar, tar, 0, coff) << endl;
     }
 
+//https://www.geeksforgeeks.org/subset-sum-problem-dp-25/ ==============================================
+// {2,3,5,7} target = 10, return true or false
+
+int isTargetPossible_memo(vector<int>& arr, int tar, int idx, vector<vector<int>>& dp){
+    if(idx == arr.size() || tar == 0){
+        return dp[idx][tar] = (tar == 0) ? 1 : 0;
+    }
+
+    if(dp[idx][tar] != -1)
+        return dp[idx][tar];
+
+    bool res = false;
+    if(tar - arr[idx] >= 0)
+        res = res || (isTargetPossible_memo(arr, tar-arr[idx], idx+1, dp) == 1);
+    res = res || isTargetPossible_memo(arr, tar, idx+1, dp);
+
+    return dp[idx][tar] = res ? 1 : 0;
+}
+
+//passing n as idx initially
+int isTargetPossible_memo_02(vector<int>& arr, int tar, int n, vector<vector<int>>& dp){
+    if(n == 0 || tar == 0){
+        return dp[n][tar] = (tar == 0) ? 1 : 0;
+    }
+
+    if(dp[n][tar] != -1)
+        return dp[n][tar];
+
+    bool res = false;
+    if(tar - arr[n-1] >= 0)
+        res = res || (isTargetPossible_memo_02(arr, tar-arr[n-1], n-1, dp) == 1);
+    res = res || isTargetPossible_memo_02(arr, tar, n-1, dp);
+
+    return dp[n][tar] = res ? 1 : 0;
+}
+
+
+bool isTargetPossible_tab_02(vector<int>& arr, int Tar, int N, vector<vector<bool>>& dp){
+
+    for(int n = 0; n <= N; ++n){
+        for(int tar = 0; tar <= Tar; ++tar){
+            if(n == 0 || tar == 0){
+                dp[n][tar] = (tar == 0) ? true : false;
+                continue;
+            }
+            
+            if(tar - arr[n-1] >= 0)
+                dp[n][tar] =  dp[n-1][tar-arr[n-1]];
+
+            dp[n][tar] = dp[n][tar] || dp[n-1][tar];
+        }
+    }
+    return dp[N][Tar];
+}
+
+//back engineering
+void printTheSubarray(int n, int tar, string asf, vector<int>& arr, vector<vector<bool>>& dp2){
+    if(tar == 0){
+        cout << asf << endl;
+        return;
+    }
+    if(tar - arr[n-1] >= 0 && dp2[n-1][tar-arr[n-1]])
+        printTheSubarray(n-1, tar-arr[n-1], to_string(arr[n-1]) + "," + asf, arr, dp2);
+    if(dp2[n-1][tar])
+        printTheSubarray(n-1, tar, asf, arr, dp2);
+}
+
+//counting ways of possibility
+int countTargetWays_tab(vector<int>& arr, int Tar, int N, vector<vector<int>>& dp){
+
+    for(int n = 0; n <= N; ++n){
+        for(int tar = 0; tar <= Tar; ++tar){
+            if(n == 0 || tar == 0){
+                dp[n][tar] = (tar == 0) ? 1 : 0;
+                continue;
+            }
+            
+            if(tar - arr[n-1] >= 0)
+                dp[n][tar] +=  dp[n-1][tar-arr[n-1]];
+
+            dp[n][tar] += dp[n-1][tar];
+        }
+    }
+    return dp[N][Tar];
+}
+
+
+//416 ===========================================================================================================
+ bool isTargetPossible_tab_02(vector<int>& arr, int Tar, int N, vector<vector<bool>>& dp){
+
+    for(int n = 0; n <= N; ++n){
+        for(int tar = 0; tar <= Tar; ++tar){
+            if(n == 0 || tar == 0){
+                dp[n][tar] = (tar == 0) ? true : false;
+                continue;
+            }
+            
+            if(tar - arr[n-1] >= 0)
+                dp[n][tar] =  dp[n-1][tar-arr[n-1]];
+
+            dp[n][tar] = dp[n][tar] || dp[n-1][tar];
+        }
+    }
+    return dp[N][Tar];
+}
+    
+    bool canPartition(vector<int>& nums) {
+        int tar = 0;
+        for(int ele : nums)
+            tar += ele;
+        if((tar&1) == 1)
+            return false;
+        
+        tar /= 2;
+        int n = nums.size();
+        vector<vector<bool>> dp(n+1, vector<bool>(tar+1, false));
+        
+        return isTargetPossible_tab_02(nums, tar, n, dp);
+    }
+
+//494 =====================================================================================
+//test cases are week, therefore only recursion will also work
+    int fnTarget(vector<int>& nums, int target, int idx){
+        if(idx == 0){
+            return (target == 0) ? 1 : 0;
+        }
+        int count = 0;
+        count += fnTarget(nums, target - nums[idx-1], idx-1); //taking as positive
+        count += fnTarget(nums, target - (-nums[idx-1]), idx-1); //taking as negative 
+        return count;
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int n = nums.size();
+        int sum = 0;
+        
+        for(int ele : nums)
+            sum += ele;
+        
+        if(target > sum || target < -sum)
+            return 0;
+        
+        return fnTarget(nums, target, n);
+    }
+
+//memoized sol
+int fnTarget(vector<int>& nums, int starting, int target, int n, vector<vector<int>>& dp){
+        if(n == 0){
+            dp[n][starting] = (starting == target) ? 1 : 0;
+        }
+        
+        if(dp[n][starting] != -1)
+            return dp[n][starting];
+        
+        int count = 0;
+        count += fnTarget(nums, starting+nums[n-1], target, n-1, dp); //taking as positive
+        count += fnTarget(nums, starting-nums[n-1], target, n-1, dp); //taking as negative 
+        
+        return dp[n][starting] = count;
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int n = nums.size();
+        int sum = 0;
+        
+        for(int ele : nums)
+            sum += ele;
+        
+        if(target > sum || target < -sum)
+            return 0;
+        
+        
+        vector<vector<int>> dp(n+1, vector<int>(2*sum +1, -1));
+        return fnTarget(nums, sum, sum+target, n, dp);
+    }
+
+//knapsack 0/1 https://practice.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1
+int knapSack01(int bagWt, int wt[], int val[], int n, vector<vector<int>>& dp){
+        if(bagWt == 0 || n == 0)
+            return dp[n][bagWt] = 0;
+            
+        if(dp[n][bagWt] != -1)
+            return dp[n][bagWt];
+            
+        int ans = 0;
+        if(bagWt - wt[n-1] >= 0)
+            ans = knapSack01(bagWt-wt[n-1], wt, val, n-1, dp) + val[n-1];
+        
+        ans = max(ans, knapSack01(bagWt, wt, val, n-1, dp));
+        return dp[n][bagWt] = ans;
+    }
+    int knapSack(int bagWt, int wt[], int val[], int n) 
+    { 
+      vector<vector<int>> dp(n+1, vector<int>(bagWt+1, -1));
+      return knapSack01(bagWt, wt, val, n, dp);
+    }
+
+//unbounded knapsack (same as inf coin comb) https://practice.geeksforgeeks.org/problems/knapsack-with-duplicate-items4201/1
+ int knapSack_unbounded(int n, int BagWeight, int value[], int weight[]) {
+        // combination
+        
+        vector<int> dp(BagWeight + 1, 0);
+        
+        for (int i = 0; i < n; i++) {
+            for (int bagWeight = weight[i]; bagWeight <= BagWeight; bagWeight++) {
+                dp[bagWeight] = max(dp[bagWeight], dp[bagWeight - weight[i]] + value[i]);
+            }
+        }
+
+        return dp[BagWeight];
+    }
+
+
+//
+
+void targetSum(){
+    vector<int> arr {2,3,5,7};
+    int n = arr.size();
+    int tar = 10;
+    //vector<vector<int>> dp(n+1, vector<int>(tar+1, -1));
+    // bool res = isTargetPossible_memo_02(arr, tar, n, dp) == 1;
+    // cout << boolalpha << res << endl;
+    //print2D(dp);
+    vector<vector<bool>> dp2(n+1, vector<bool>(tar+1, false));
+    cout << boolalpha << isTargetPossible_tab_02(arr, tar, n, dp2) << endl;
+    // for (vector<bool>& ar : dp2) {
+    //     for(bool ele : ar)cout << ele << " ";
+    //     cout<<endl;
+    // }
+    printTheSubarray(n, tar, "", arr, dp2);
+
+    vector<vector<int>> dp3(n+1, vector<int>(tar+1, 0));
+    cout << countTargetWays_tab(arr, tar, n, dp3) << endl; 
+}
 
 int main(){
-    coinChange();
+    //coinChange();
+    targetSum();
     return 0;
 }
