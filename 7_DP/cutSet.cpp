@@ -179,7 +179,118 @@ string longestPalindrome(string s) {
         return s.substr(si, len);
     }
 
+//132 ===================================================================================================
+int minCut_memo(string str, int si, vector<vector<bool>>& isPlaindrome, vector<int>& dp) {
+        if (isPlaindrome[si][str.length() - 1])
+            return dp[si] = 0;
+        if (dp[si] != -1)
+            return dp[si];
 
+        int minAns = 1e9;
+        for (int cut = si; cut < str.length(); cut++) {
+            if (isPlaindrome[si][cut]) {
+                minAns = min(minAns, minCut_memo(str, cut + 1, isPlaindrome, dp) + 1);
+            }
+        }
+
+        return dp[si] = minAns;
+    }
+
+    int minCut_tab(string str, int SI, vector<vector<bool>>& isPlaindrome, vector<int>& dp) {
+        for (int si = str.length() - 1; si >= 0; si--) {
+            if (isPlaindrome[si][str.length() - 1]) {
+                dp[si] = 0;
+                continue;
+            }
+
+            int minAns = 1e9;
+            for (int cut = si; cut < str.length(); cut++) {
+                if (isPlaindrome[si][cut]) {
+                    minAns = min(minAns, dp[cut + 1] + 1);
+                }
+            }
+
+            dp[si] = minAns;
+        }
+
+        return dp[SI];
+    }
+
+    int minCut(string str) {
+        int n = str.length();
+        vector<vector<bool>> isPlaindrome(n, vector<bool>(n, false));
+        for (int gap = 0; gap < n; gap++) {
+            for (int i = 0, j = gap; j < n; i++, j++) {
+                if (gap == 0)
+                    isPlaindrome[i][j] = true;
+                else if (gap == 1)
+                    isPlaindrome[i][j] = str[i] == str[j];
+                else
+                    isPlaindrome[i][j] = str[i] == str[j] && isPlaindrome[i + 1][j - 1];
+            }
+        }
+
+        vector<int> dp(n, -1);
+        return minCut_memo(str, 0, isPlaindrome, dp);
+    }
+
+//312 ================================================================================================
+int maxCoins(vector<int>& nums, int si, int ei, vector<vector<int>>& dp) {
+        if (dp[si][ei] != -1)
+            return dp[si][ei];
+
+        int lval = si - 1 == -1 ? 1 : nums[si - 1];
+        int rval = ei + 1 == nums.size() ? 1 : nums[ei + 1];
+
+        int maxAns = 0;
+        for (int cut = si; cut <= ei; cut++) {
+            int lans = (cut == si) ? 0 : maxCoins(nums, si, cut - 1, dp);
+            int rans = (cut == ei) ? 0 : maxCoins(nums, cut + 1, ei, dp);
+
+            maxAns = max(maxAns, lans + lval * nums[cut] * rval + rans);
+        }
+
+        return dp[si][ei] = maxAns;
+
+    }
+
+    int maxCoins(vector<int>& nums) {
+        int n = nums.size();
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+       
+        return maxCoins(nums, 0, n - 1, dp);
+    }
+
+//1039 ===================================================================================
+int minScoreTriangulation(vector<int>& arr, int si, int ei, vector<vector<int>>& dp) {
+        if (ei - si <= 1) {
+            return dp[si][ei] = 0;
+        }
+
+        if (dp[si][ei] != -1)
+            return dp[si][ei];
+
+        int minAns = 1e9;
+        for (int cut = si + 1; cut < ei; cut++) {
+            int lans = minScoreTriangulation(arr, si, cut, dp);
+            int rans = minScoreTriangulation(arr, cut, ei, dp);
+
+            minAns = min(minAns, lans + arr[si] * arr[cut] * arr[ei] + rans);
+        }
+
+        return dp[si][ei] = minAns;
+
+    }
+
+    int minScoreTriangulation(vector<int>& values) {
+        int n = values.size();
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+
+        return minScoreTriangulation(values, 0, n - 1, dp);
+    }
+
+
+    
 
     int main(){
         minMaxEvalutaion_();
