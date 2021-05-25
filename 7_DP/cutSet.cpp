@@ -289,8 +289,8 @@ int minScoreTriangulation(vector<int>& arr, int si, int ei, vector<vector<int>>&
         return minScoreTriangulation(values, 0, n - 1, dp);
     }
 
-
-    
+//boolean parenthization https://practice.geeksforgeeks.org/problems/boolean-parenthesization5610/1
+//submitted 
 
     int main(){
         minMaxEvalutaion_();
