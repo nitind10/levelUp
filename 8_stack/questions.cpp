@@ -162,3 +162,20 @@ class StockSpanner {
             return false;
         return true;
     }
+
+//946 =========================================================================
+ bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+        stack<int> st;
+        int n = pushed.size();
+        
+        int i = 0;
+        
+        for(int ele : pushed){
+           st.push(ele);
+           while(st.size() != 0 && st.top() == popped[i]){
+               st.pop();
+               i++;
+           }
+        }
+        return i == n;
+    }
