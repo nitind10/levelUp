@@ -179,3 +179,38 @@ class StockSpanner {
         }
         return i == n;
     }
+
+//1249 ================================================================================
+    string minRemoveToMakeValid(string s)
+{
+    vector<int> st;
+    int n = s.length();
+    for (int i = 0; i < n; i++)
+    {
+        char ch = s[i];
+        if (ch == '(')
+            st.push_back(i);
+        else if (ch == ')')
+        {
+            if (st.size() != 0 && s[st.back()] == '(')
+                st.pop_back();
+            else
+                st.push_back(i);
+        }
+    }
+
+    string ans = "";
+    int idx = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (idx < st.size() && st[idx] == i)
+        {
+            idx++;
+            continue;
+        }
+
+        ans.push_back(s[i]);
+    }
+
+    return ans;
+}
