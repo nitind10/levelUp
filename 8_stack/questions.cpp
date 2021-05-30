@@ -321,3 +321,29 @@ void NSOL(vector<int> &arr, vector<int> &ans)
         
         return maxArea;
     }
+
+//85=======================================================================
+int maximalRectangle(vector<vector<char>>& matrix) {
+        int n = matrix.size();
+        if(n==0) return 0;
+        
+        int m = matrix[0].size();
+        
+        if (n == 0 || m == 0)
+            return 0;
+        
+        int maxRec = 0;
+        
+        vector<int> heights(m, 0);
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                char ch = matrix[i][j];
+                heights[j] = ch == '1' ? heights[j] + 1 : 0;
+            }
+
+            maxRec = max(maxRec, largestRectangleArea(heights));
+        }
+
+        return maxRec;
+    }
