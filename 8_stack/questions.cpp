@@ -232,3 +232,92 @@ int longestValidParentheses(string s) {
 
         return len;
     }
+
+//735 ==========================================================================
+ vector<int> asteroidCollision(vector<int> &arr)
+{
+    stack<int> st;
+
+    int n = arr.size();
+    for (int ele : arr)
+    {
+        if (ele > 0)
+        {
+            st.push(ele);
+            continue;
+        }
+
+        while (st.size() != 0 && st.top() > 0 && st.top() < -ele)
+            st.pop();
+
+        if (st.size() != 0 && st.top() == -ele)
+            st.pop();
+        else if (st.size() == 0 || st.top() < 0)
+            st.push(ele);
+        else
+        {
+        }
+    }
+
+    vector<int> ans(st.size(), 0);
+    int idx = st.size() - 1;
+    while (st.size() != 0)
+    {
+        ans[idx--] = st.top();
+        st.pop();
+    }
+
+    return ans;
+}
+
+
+//84 =========================================================================
+ void NSOR(vector<int> &arr, vector<int> &ans)
+    {
+        int n = arr.size();
+        ans.resize(n, n); //Java :  Arrays.fill(ans,n);
+
+        stack<int> st;
+        for (int i = 0; i < n; i++)
+        {
+            while (st.size() != 0 && arr[st.top()] > arr[i])
+            {
+                ans[st.top()] = i;
+                st.pop();
+            }
+            st.push(i);
+        }
+    }
+
+void NSOL(vector<int> &arr, vector<int> &ans)
+    {
+        int n = arr.size();
+        ans.resize(n, -1); //Java :  Arrays.fill(ans,-1);
+
+        stack<int> st;
+        for (int i = n - 1; i >= 0; i--)
+        {
+            while (st.size() != 0 && arr[st.top()] > arr[i])
+            {
+                ans[st.top()] = i;
+                st.pop();
+            }
+            st.push(i);
+        }
+    }
+    
+    
+    int largestRectangleArea(vector<int>& heights) {
+        vector<int> nsol, nsor;
+        
+        NSOL(heights, nsol);
+        NSOR(heights, nsor);
+        
+        int maxArea = 0;
+        
+        for(int i=0; i < heights.size(); ++i){
+            maxArea = max(maxArea, (nsor[i] - nsol[i] - 1) * heights[i]);
+        }
+        
+        return maxArea;
+    }
