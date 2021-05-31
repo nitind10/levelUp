@@ -356,7 +356,7 @@ void NSOL(vector<int> &arr, vector<int> &ans)
         return maxArea;
     }
 
-    
+
 
 //85=======================================================================
 int maximalRectangle(vector<vector<char>>& matrix) {
@@ -382,4 +382,36 @@ int maximalRectangle(vector<vector<char>>& matrix) {
         }
 
         return maxRec;
+    }
+
+
+//402 ==========================================================================================
+string removeKdigits(string num, int k) {
+        vector<char> st;
+
+        for (int i = 0; i < num.length(); i++) {
+            char ch = num[i];
+            while (st.size() != 0 && st[st.size() - 1] > ch && k > 0) {
+                st.pop_back();
+                k--;
+            }
+            st.push_back(ch);
+        }
+
+        while (k-- > 0) {
+            st.pop_back();
+        }
+
+        string ans;
+        bool flag = false;
+        for (char ch : st) {
+            if (ch == '0' && !flag) {
+                continue;
+            }
+
+            flag = true;
+            ans += ch;
+        }
+
+        return ans.length() == 0 ? "0" : ans;
     }
