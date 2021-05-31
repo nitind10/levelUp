@@ -322,6 +322,42 @@ void NSOL(vector<int> &arr, vector<int> &ans)
         return maxArea;
     }
 
+//approach2 ------
+ //t(n): 2n, s(n): n
+     int largestRectangleArea(vector<int>& heights) {
+        int n = heights.size();
+        stack<int> st;
+        st.push(-1);
+        int maxArea = 0;
+
+        int i = 0;
+        while (i < n) {
+            while (st.top() != -1 && heights[st.top()] >= heights[i]) {
+                int idx = st.top();
+                st.pop();
+
+                int h = heights[idx];
+                int w = i - st.top() - 1;
+                maxArea = max(maxArea, h * w);
+            }
+
+            st.push(i++);
+        }
+
+        while (st.top() != -1) {
+            int idx = st.top();
+            st.pop();
+
+            int h = heights[idx];
+            int w = n - st.top() - 1;
+            maxArea = max(maxArea, h * w);
+        }
+
+        return maxArea;
+    }
+
+    
+
 //85=======================================================================
 int maximalRectangle(vector<vector<char>>& matrix) {
         int n = matrix.size();
