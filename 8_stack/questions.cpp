@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stack>
 #include <vector>
+#include<algorithm>
 
 using namespace std;
 
@@ -442,4 +443,81 @@ string removeKdigits(string num, int k) {
         }
 
         return st;
+    }
+
+//42 =========================================================================================================
+//approach1 using space
+    int trap(vector<int> &height)
+    {
+        int n = height.size();
+        vector<int> lHeight(n, 0);
+        vector<int> rHeight(n, 0);
+
+        int prev = 0;
+        for (int i = 0; i < n; i++)
+        {
+            lHeight[i] = max(height[i], prev);
+            prev = lHeight[i];
+        }
+
+        prev = 0;
+        for (int i = n - 1; i >= 0; i--)
+        {
+            rHeight[i] = max(height[i], prev);
+            prev = rHeight[i];
+        }
+
+        int totalWater = 0;
+        for (int i = 0; i < n; i++)
+        {
+            totalWater += min(lHeight[i], rHeight[i]) - height[i];
+        }
+
+        return totalWater;
+    }
+
+//approach2 using stack
+    int trap(vector<int> &height)
+    {
+        int n = height.size();
+        stack<int> st;
+
+        int totalWater = 0;
+        for (int i = 0; i < n; i++)
+        {
+            while (st.size() != 0 && height[st.top()] <= height[i])
+            {
+                int idx = st.top();
+                st.pop();
+                if (st.size() == 0)
+                    break;
+
+                int w = i - st.top() - 1;
+                int h = height[idx];
+
+                totalWater += w * (min(height[st.top()], height[i]) - h);
+            }
+
+            st.push(i);
+        }
+
+        return totalWater;
+    }
+
+ //approach3 using 2 ptr
+    int trap(vector<int> &height)
+    {
+        int n = height.size();
+        int lmax = 0, rmax = 0;
+        int l = 0, r = n - 1, totalWater = 0;
+
+        while (l < r)
+        {
+            lmax = max(lmax, height[l]);
+            rmax = max(rmax, height[r]);
+
+            totalWater += lmax < rmax ? lmax - height[l++] : rmax - height[r--];
+        }
+
+        return totalWater;
     }
