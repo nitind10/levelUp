@@ -415,3 +415,31 @@ string removeKdigits(string num, int k) {
 
         return ans.length() == 0 ? "0" : ans;
     }
+
+
+//316 ==============================================================================
+//using string as stack
+    string removeDuplicateLetters(string s){
+        string st = "";
+        vector<bool> vis(26, false);
+        vector<int> freq(26, 0);
+        for (char ch : s)
+            freq[ch - 'a']++;
+
+        for (char ch : s){
+            freq[ch - 'a']--;
+            if (vis[ch - 'a'])
+                continue;
+
+            while (st.length() != 0 && st.back() > ch && freq[st.back() - 'a'] > 0){
+                char rch = st.back();
+                st.pop_back();
+                vis[rch - 'a'] = false;
+            }
+
+            vis[ch - 'a'] = true;
+            st.push_back(ch);
+        }
+
+        return st;
+    }
