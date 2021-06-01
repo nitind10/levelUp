@@ -34,6 +34,8 @@ public class stack {
         }
 
         rn.next = null;
+
+        return rn;
     }
 
     public int size() {

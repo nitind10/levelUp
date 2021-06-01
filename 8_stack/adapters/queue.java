@@ -33,6 +33,8 @@ public class queue {
         }
 
         rn.next = null;
+
+        return rn;
     }
 
     public int size() {
