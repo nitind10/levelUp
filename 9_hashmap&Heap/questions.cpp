@@ -4,6 +4,7 @@
 #include<algorithm>
 #include<unordered_map>
 #include<unordered_set>
+#include<stack>
 using namespace std;
 
 //215 =============================================================
@@ -437,3 +438,47 @@ int trapRainWater(vector<vector<int>> &heightMap)
     }
     return water;
 }
+
+//778 =======================================================================================
+ int swimInWater(vector<vector<int>>& grid) {
+        int n = grid.size(), m = n;
+
+        //{elevation, x, y}
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+
+        vector<vector<int>> dir = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+        
+        //no need of visited, i can mark by putting elevation as -1, and i already stored elevation in pq
+
+        pq.push({grid[0][0], 0, 0});
+        grid[0][0] = -1;
+
+        int minHeight = 0, time = 0;
+
+        while (pq.size() != 0) {
+            vector<int> rv = pq.top();
+            pq.pop();
+            int i = rv[1];
+            int j = rv[2];
+            int height = rv[0];
+
+            time += max(0, height - minHeight);
+            if (i == n-1 && j == m-1)
+                break;
+
+            minHeight = max(minHeight, height);
+
+            for (int d = 0; d < dir.size(); d++) {
+                int r = i + dir[d][0];
+                int c = j + dir[d][1];
+
+                if (r >= 0 && c >= 0 && r < n && c < m && grid[r][c] != -1) {
+                    pq.push({grid[r][c], r, c});
+                    grid[r][c] = -1;
+                }
+            }
+        }
+    
+        //can also return minHeight, as it'll be the same as time
+        return time;
+    }
