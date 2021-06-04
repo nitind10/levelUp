@@ -87,17 +87,44 @@ public:
         return ans;
     }
 
+//128==============================================================================
+//as the number of things in unordered map/set increses, the complexity worsens
+    //therefore for hashmap to perform better, remove unnecessary elements
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> set;
+        
+        for(int ele : nums)
+            set.insert(ele);
+        
+        int len = 0;
+        for(int ele : nums){
+            if(set.find(ele) != set.end()){
+                int ple = ele - 1; //potential right element
+                int pre = ele + 1; //potential left element
+                
+                while(set.find(ple) != set.end())
+                    set.erase(ple--);
+                while(set.find(pre) != set.end())
+                    set.erase(pre++);
+                
+                len = max(len, pre-ple-1);
+            }
+        }
+        
+        return len;
+    }
+
 //347 =========================================================================
  vector<int> topKFrequent(vector<int>& nums, int k) {
         unordered_map<int,int> map;
         
-        for(int ele : nums)
+        for(int ele : nums) //n
             map[ele]++;
         
         //by default a comparator is written on 0th idx of vector and first element of a pair
         priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
         
-        for(pair<int,int> key : map){
+        for(pair<int,int> key : map){ //nlogk
             int val = key.first;
             int freq = key.second;
             
@@ -109,7 +136,7 @@ public:
         
         vector<int> ans;
         
-        while(pq.size() != 0){
+        while(pq.size() != 0){ //klogk
             vector<int> rv = pq.top();
             pq.pop();
             
@@ -119,5 +146,98 @@ public:
             ans.push_back(val);
         }
         
+        return ans;
+    }
+
+//973==========================================================================
+//imp***********
+//gave functionality to pq based on distance(int), avoid comapring floating ponits
+//
+class comparator{
+      public:
+        bool operator()(const vector<int>& a, const vector<int>& b) const{
+            int d1Square = a[0]*a[0] + a[1]*a[1];
+            int d2Square = b[0]*b[0] + b[1]*b[1];
+            
+            //maxPQ {other > this}
+            return d2Square > d1Square;
+        }
+    };
+    vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {
+        //{x, y}
+        priority_queue<vector<int>, vector<vector<int>>, comparator> pq;
+        
+        for(vector<int>& v : points){
+            pq.push(v);
+            if(pq.size() > k)
+                pq.pop();
+        }
+        
+        vector<vector<int>> ans;
+        
+        while(pq.size() != 0){
+            vector<int> rv = pq.top();
+            pq.pop();
+            ans.push_back(rv);
+        }
+        
+        return ans;
+    }
+
+//alternate approach
+vector<vector<int>> kClosest(vector<vector<int>> &points, int k)
+{
+    //{d,x,y}
+    priority_queue<vector<int>> pq; // maxPQ
+
+    for (vector<int> &p : points)
+    {
+        int x = p[0];
+        int y = p[1];
+        pq.push({x * x + y * y, x, y});
+        if (pq.size() > k)
+            pq.pop();
+    }
+
+    vector<vector<int>> ans;
+    while (pq.size() != 0)
+    {
+        vector<int> p = pq.top();
+        pq.pop();
+        int x = p[1];
+        int y = p[2];
+
+        ans.push_back({x, y});
+    }
+
+    return ans;
+}
+
+//378============================================================================================
+int kthSmallest(vector<vector<int>>& matrix, int k) {
+        int n = matrix.size(), m = matrix[0].size();
+        //{val,x,y};
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+
+        for (int i = 0; i < n; i++)
+        {
+            pq.push({matrix[i][0], i, 0});
+        }
+
+        int ans = 0;
+        while (k-- > 0)
+        {
+            vector<int> rv = pq.top();
+            pq.pop();
+            int val = rv[0];
+            int x = rv[1];
+            int y = rv[2];
+
+            ans = val;
+            y++;
+            if (y < m)
+                pq.push({matrix[x][y], x, y});
+        }
+
         return ans;
     }
