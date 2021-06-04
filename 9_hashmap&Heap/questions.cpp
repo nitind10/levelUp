@@ -1,3 +1,11 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<algorithm>
+#include<unordered_map>
+#include<unordered_set>
+using namespace std;
+
 //215 =============================================================
 //can optime by making own heap
  //nlogk
@@ -35,3 +43,81 @@ public:
         return this->pq.top();
     }
 };
+
+//349============================================================================
+//unordeder_set : only keeps distinct keys, insert,search,delete -> on average o(1)
+    //ordered set i.e only set : keeps keys in increasing order, self balancing bst, o(logn)
+    vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+        unordered_set<int> set;
+        
+        for(int ele : nums1)
+            set.insert(ele);
+        
+        vector<int> ans;
+        
+        for(int ele : nums2){
+            if(set.find(ele) != set.end()){
+                ans.push_back(ele);
+                set.erase(ele);
+            }
+        }
+        
+        return ans;
+    }
+
+//350==================================================================================
+ vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+         unordered_map<int,int> map;
+        
+        for(int ele : nums1)
+            map[ele]++;
+        
+        vector<int> ans;
+        
+        for(int ele : nums2){
+            if(map.find(ele) != map.end()){
+                ans.push_back(ele);
+                map[ele]--;
+                
+                if(map[ele] == 0)
+                    map.erase(ele);
+            }
+        }
+        
+        return ans;
+    }
+
+//347 =========================================================================
+ vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int,int> map;
+        
+        for(int ele : nums)
+            map[ele]++;
+        
+        //by default a comparator is written on 0th idx of vector and first element of a pair
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        
+        for(pair<int,int> key : map){
+            int val = key.first;
+            int freq = key.second;
+            
+            pq.push({freq,val});
+            
+            if(pq.size() > k)
+                pq.pop();
+        }
+        
+        vector<int> ans;
+        
+        while(pq.size() != 0){
+            vector<int> rv = pq.top();
+            pq.pop();
+            
+            int freq = rv[0];
+            int val = rv[1];
+            
+            ans.push_back(val);
+        }
+        
+        return ans;
+    }
