@@ -482,3 +482,117 @@ int trapRainWater(vector<vector<int>> &heightMap)
         //can also return minHeight, as it'll be the same as time
         return time;
     }
+
+
+//295 ============================================================================================
+class MedianFinder{
+    private:
+        priority_queue<int> maxPQ;
+        priority_queue<int, vector<int>, greater<int>> minPQ;
+
+    public:
+        /** initialize your data structure here. */
+        MedianFinder() {
+
+        }
+
+        void addNum(int num) {
+            if (maxPQ.size() == 0 || num <= maxPQ.top())
+                maxPQ.push(num);
+            else
+                minPQ.push(num);
+
+            if (maxPQ.size() - minPQ.size() == 2){
+                minPQ.push(maxPQ.top());
+                maxPQ.pop();
+            }   
+            
+            if (maxPQ.size() - minPQ.size() == -1){
+                maxPQ.push(minPQ.top());
+                minPQ.pop();
+            } 
+        }
+
+        double findMedian(){
+            if (maxPQ.size() == minPQ.size())
+                return ((maxPQ.top() + minPQ.top()) / 2.0);
+            else
+                return maxPQ.top() * 1.0;
+        }
+};
+
+
+//502 do Yourself
+
+//023 ============================================================================================
+ //(NK)Log(K) using heap
+    class comp
+    {
+    public:
+        bool operator()(const ListNode *a, const ListNode *b) const
+        {
+            return a->val > b->val;
+        }
+    };
+    ListNode *mergeKLists(vector<ListNode *> lists)
+    {
+        priority_queue<ListNode *, vector<ListNode *>, comp> pq;
+
+        for (int i = 0; i < lists.size(); i++)
+            if (lists[i] != nullptr)
+                pq.push(lists[i]);
+
+        ListNode *dummy = new ListNode(-1);
+        ListNode *prev = dummy;
+
+        while (pq.size() != 0)
+        {
+            ListNode *rn = pq.top();
+            pq.pop();
+            prev->next = rn;
+            prev = prev->next;
+
+            if (rn->next != nullptr)
+                pq.push(rn->next);
+        }
+        return dummy->next;
+    }
+
+//632 ============================================================================================
+//N.M.Log(N)
+    vector<int> smallestRange(vector<vector<int>>& nums){     
+        int n = nums.size();
+
+        // {val,r,c}
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+
+        int maxValue = -1e9;
+        for(int i=0; i<n; i++){
+            pq.push({nums[i][0],i,0});
+            maxValue = max(maxValue,nums[i][0]);
+        }
+    
+        int range = 1e9;
+        int sp = -1, ep = -1;
+
+        while(pq.size() == n){
+            vector<int> re = pq.top(); // re : removed Element
+            pq.pop();
+            int val = re[0], r = re[1], c = re[2];
+
+            if(maxValue - val < range){
+                range = maxValue - val;
+                sp = val;
+                ep = maxValue;
+            }
+
+            c++;
+            
+            if(c < nums[r].size()){
+                pq.push({nums[r][c],r,c});
+                maxValue = max(maxValue,nums[r][c]);
+            }            
+        }
+
+        return {sp,ep};
+    }
