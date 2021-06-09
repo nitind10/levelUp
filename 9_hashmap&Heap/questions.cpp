@@ -525,7 +525,7 @@ class MedianFinder{
 //502 do Yourself
 
 //023 ============================================================================================
- //(NK)Log(K) using heap
+ //(NK)Log(K) using heap, same using mergeSort too
     class comp
     {
     public:
